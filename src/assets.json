@@ -1,95 +1,106 @@
 {
- "release": "build-test",
+ "release": "build-44890522965-1",
  "clips": {
   "home": {
-   "duration": 120.385078,
+   "stretch": 4,
+   "duration": 30.077,
+   "source_fps": 14.7,
    "marks": [
     {
-     "t": 1.2,
+     "t": 0.3,
      "label": "start"
     },
     {
-     "t": 11.2,
+     "t": 2.8,
      "label": "hero-right-0"
     },
     {
-     "t": 23.6,
+     "t": 5.9,
      "label": "hero-right-1"
     },
     {
-     "t": 36.01,
+     "t": 9.002,
      "label": "down-row0"
     },
     {
-     "t": 60.65,
+     "t": 15.162,
      "label": "down-row1"
     },
     {
-     "t": 76.09,
+     "t": 19.023,
      "label": "down-row2"
     },
     {
-     "t": 91.19,
+     "t": 22.797,
      "label": "down-row3"
     },
     {
-     "t": 103.27,
+     "t": 25.817,
      "label": "up"
     },
     {
-     "t": 120.02,
+     "t": 30.005,
      "label": "end"
     }
-   ]
+   ],
+   "frames60": 1804
   },
   "detail": {
-   "duration": 58.8947,
+   "stretch": 4,
+   "duration": 14.692,
+   "source_fps": 16.9,
    "marks": [
     {
-     "t": 1.2,
+     "t": 0.3,
      "label": "open"
     },
     {
-     "t": 15.33,
+     "t": 3.833,
      "label": "down-0"
     },
     {
-     "t": 22.56,
+     "t": 5.64,
      "label": "down-1"
     },
     {
-     "t": 29.89,
+     "t": 7.473,
      "label": "down-2"
     },
     {
-     "t": 37.11,
+     "t": 9.277,
      "label": "down-3"
     },
     {
-     "t": 52.83,
+     "t": 13.207,
      "label": "up"
     },
     {
-     "t": 69.34,
+     "t": 17.335,
      "label": "end"
     }
-   ]
+   ],
+   "frames60": 881
   },
   "tab-calendar": {
-   "duration": 38.187822,
+   "stretch": 4,
+   "duration": 9.519,
+   "source_fps": 14.6,
    "marks": [
     {
-     "t": 1.2,
+     "t": 0.3,
      "label": "start"
     },
     {
-     "t": 37.35,
+     "t": 9.338,
      "label": "end"
     }
-   ]
+   ],
+   "frames60": 571
   },
   "live": {
-   "duration": 29.581022,
+   "stretch": 1,
+   "duration": 29.56,
+   "source_fps": 6.6,
    "marks": [
     {
      "t": 1.2,
@@ -119,7 +130,132 @@
      "t": 32.36,
      "label": "end"
     }
-   ]
+   ],
+   "frames60": 1773
+  },
+  "library": {
+   "stretch": 4,
+   "duration": 11.138,
+   "source_fps": 14.3,
+   "marks": [
+    {
+     "t": 0.3,
+     "label": "start"
+    },
+    {
+     "t": 12.152,
+     "label": "end"
+    }
+   ],
+   "frames60": 668
+  },
+  "themes": {
+   "stretch": 4,
+   "duration": 16.416,
+   "source_fps": 8.6,
+   "marks": [
+    {
+     "t": 0.802,
+     "label": "B站粉"
+    },
+    {
+     "t": 3.902,
+     "label": "翡翠绿"
+    },
+    {
+     "t": 7.008,
+     "label": "琥珀金"
+    },
+    {
+     "t": 14.912,
+     "label": "星际蓝"
+    },
+    {
+     "t": 17.52,
+     "label": "end"
+    }
+   ],
+   "frames60": 984
+  },
+  "player-osd": {
+   "stretch": 4,
+   "duration": 19.84,
+   "source_fps": 15.9,
+   "marks": [
+    {
+     "t": 0.3,
+     "label": "osd"
+    },
+    {
+     "t": 2.308,
+     "label": "osd-down"
+    },
+    {
+     "t": 4.008,
+     "label": "osd-right-0"
+    },
+    {
+     "t": 5.12,
+     "label": "osd-right-1"
+    },
+    {
+     "t": 6.128,
+     "label": "osd-right-2"
+    },
+    {
+     "t": 7.258,
+     "label": "drawer"
+    },
+    {
+     "t": 11.588,
+     "label": "drawer-back"
+    },
+    {
+     "t": 14.0,
+     "label": "drawer2"
+    },
+    {
+     "t": 18.352,
+     "label": "back"
+    },
+    {
+     "t": 19.76,
+     "label": "end"
+    }
+   ],
+   "frames60": 1190
+  },
+  "player-live": {
+   "stretch": 1,
+   "duration": 19.655,
+   "source_fps": 5.9,
+   "marks": [
+    {
+     "t": 1.21,
+     "label": "playing"
+    },
+    {
+     "t": 22.18,
+     "label": "end"
+    }
+   ],
+   "frames60": 1179
+  },
+  "vod-detail": {
+   "stretch": 4,
+   "duration": 8.89,
+   "source_fps": 16.5,
+   "marks": [
+    {
+     "t": 0.3,
+     "label": "start"
+    },
+    {
+     "t": 8.93,
+     "label": "end"
+    }
+   ],
+   "frames60": 533
   }
  },
  "shots": [
@@ -131,7 +267,15 @@
   "player-osd",
   "live-list",
   "library",
-  "vod-detail"
+  "vod-detail",
+  "theme-a",
+  "light-home",
+  "light-library",
+  "mine",
+  "osd-drawer",
+  "osd-drawer2",
+  "osd-drawer3",
+  "vod-0"
  ],
  "posters": [
   "posters/p00.jpg",
@@ -151,31 +295,7 @@
   "posters/p14.jpg",
   "posters/p15.jpg",
   "posters/p16.jpg",
-  "posters/p17.jpg",
-  "posters/p18.jpg",
-  "posters/p19.jpg",
-  "posters/p20.jpg",
-  "posters/p21.jpg",
-  "posters/p22.jpg",
-  "posters/p23.jpg",
-  "posters/p24.jpg",
-  "posters/p25.jpg",
-  "posters/p26.jpg",
-  "posters/p27.jpg",
-  "posters/p28.jpg",
-  "posters/p29.jpg",
-  "posters/p30.jpg",
-  "posters/p31.jpg",
-  "posters/p32.jpg",
-  "posters/p33.jpg",
-  "posters/p34.jpg",
-  "posters/p35.jpg",
-  "posters/p36.jpg",
-  "posters/p37.jpg",
-  "posters/p38.jpg",
-  "posters/p39.jpg",
-  "posters/p40.jpg",
-  "posters/p41.jpg"
+  "posters/p17.jpg"
  ],
  "films": [
   "sintel",

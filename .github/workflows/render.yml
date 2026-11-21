@@ -72,7 +72,7 @@ jobs:
           npx remotion render src/index.ts Promo out/part-${{ matrix.i }}.mp4 \
             --frames=${{ matrix.a }}-${{ matrix.b }} --scale=2 --codec=h264 --crf=14 \
             --x264-preset=slow --pixel-format=yuv420p --color-space=bt709 --muted \
-            --concurrency=4 --gl=angle --timeout=120000 --log=info
+            --concurrency=3 --gl=angle --timeout=600000 --offthreadvideo-cache-size-in-bytes=2000000000 --log=info
       - uses: actions/upload-artifact@v4
         with:
           name: part-${{ matrix.i }}

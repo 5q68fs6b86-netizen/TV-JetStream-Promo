@@ -1,4 +1,5 @@
 import React from 'react';
+import {FONT_DATA} from './fonts.generated';
 import {
   AbsoluteFill,
   Easing,
@@ -32,16 +33,16 @@ export const FONT = 'MiSans, "PingFang SC", "Noto Sans CJK SC", sans-serif';
 if (typeof window !== 'undefined' && typeof document !== 'undefined' && !(window as any).__misans) {
   (window as any).__misans = true;
   const faces: [string, number][] = [
-    ['misans_regular.ttf', 400],
-    ['misans_medium.ttf', 500],
-    ['misans_semibold.ttf', 600],
+    ['regular', 400],
+    ['medium', 500],
+    ['semibold', 600],
   ];
   const style = document.createElement('style');
   style.textContent = faces
-    .map(([f, w]) => `@font-face{font-family:'MiSans';src:url('${staticFile('fonts/' + f)}') format('truetype');font-weight:${w};font-style:normal;font-display:block;}`)
+    .map(([, w]) => `@font-face{font-family:'MiSans';src:url('${FONT_DATA[w]}') format('truetype');font-weight:${w};font-style:normal;font-display:block;}`)
     .join('\n');
   document.head.appendChild(style);
-  const h = delayRender('MiSans', {timeoutInMilliseconds: 90000});
+  const h = delayRender('MiSans', {timeoutInMilliseconds: 600000});
   let done = false;
   const finish = (why: string) => {
     if (done) return;
