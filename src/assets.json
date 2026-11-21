@@ -1,1 +1,184 @@
-{"release": "", "clips": {}, "shots": [], "posters": [], "films": []}
+{
+ "release": "build-test",
+ "clips": {
+  "home": {
+   "duration": 120.385078,
+   "marks": [
+    {
+     "t": 1.2,
+     "label": "start"
+    },
+    {
+     "t": 11.2,
+     "label": "hero-right-0"
+    },
+    {
+     "t": 23.6,
+     "label": "hero-right-1"
+    },
+    {
+     "t": 36.01,
+     "label": "down-row0"
+    },
+    {
+     "t": 60.65,
+     "label": "down-row1"
+    },
+    {
+     "t": 76.09,
+     "label": "down-row2"
+    },
+    {
+     "t": 91.19,
+     "label": "down-row3"
+    },
+    {
+     "t": 103.27,
+     "label": "up"
+    },
+    {
+     "t": 120.02,
+     "label": "end"
+    }
+   ]
+  },
+  "detail": {
+   "duration": 58.8947,
+   "marks": [
+    {
+     "t": 1.2,
+     "label": "open"
+    },
+    {
+     "t": 15.33,
+     "label": "down-0"
+    },
+    {
+     "t": 22.56,
+     "label": "down-1"
+    },
+    {
+     "t": 29.89,
+     "label": "down-2"
+    },
+    {
+     "t": 37.11,
+     "label": "down-3"
+    },
+    {
+     "t": 52.83,
+     "label": "up"
+    },
+    {
+     "t": 69.34,
+     "label": "end"
+    }
+   ]
+  },
+  "tab-calendar": {
+   "duration": 38.187822,
+   "marks": [
+    {
+     "t": 1.2,
+     "label": "start"
+    },
+    {
+     "t": 37.35,
+     "label": "end"
+    }
+   ]
+  },
+  "live": {
+   "duration": 29.581022,
+   "marks": [
+    {
+     "t": 1.2,
+     "label": "live"
+    },
+    {
+     "t": 5.2,
+     "label": "list"
+    },
+    {
+     "t": 13.16,
+     "label": "groups"
+    },
+    {
+     "t": 17.43,
+     "label": "epg"
+    },
+    {
+     "t": 23.86,
+     "label": "back"
+    },
+    {
+     "t": 26.45,
+     "label": "zap"
+    },
+    {
+     "t": 32.36,
+     "label": "end"
+    }
+   ]
+  }
+ },
+ "shots": [
+  "home-hero",
+  "home-row",
+  "detail",
+  "calendar",
+  "player-danmaku",
+  "player-osd",
+  "live-list",
+  "library",
+  "vod-detail"
+ ],
+ "posters": [
+  "posters/p00.jpg",
+  "posters/p01.jpg",
+  "posters/p02.jpg",
+  "posters/p03.jpg",
+  "posters/p04.jpg",
+  "posters/p05.jpg",
+  "posters/p06.jpg",
+  "posters/p07.jpg",
+  "posters/p08.jpg",
+  "posters/p09.jpg",
+  "posters/p10.jpg",
+  "posters/p11.jpg",
+  "posters/p12.jpg",
+  "posters/p13.jpg",
+  "posters/p14.jpg",
+  "posters/p15.jpg",
+  "posters/p16.jpg",
+  "posters/p17.jpg",
+  "posters/p18.jpg",
+  "posters/p19.jpg",
+  "posters/p20.jpg",
+  "posters/p21.jpg",
+  "posters/p22.jpg",
+  "posters/p23.jpg",
+  "posters/p24.jpg",
+  "posters/p25.jpg",
+  "posters/p26.jpg",
+  "posters/p27.jpg",
+  "posters/p28.jpg",
+  "posters/p29.jpg",
+  "posters/p30.jpg",
+  "posters/p31.jpg",
+  "posters/p32.jpg",
+  "posters/p33.jpg",
+  "posters/p34.jpg",
+  "posters/p35.jpg",
+  "posters/p36.jpg",
+  "posters/p37.jpg",
+  "posters/p38.jpg",
+  "posters/p39.jpg",
+  "posters/p40.jpg",
+  "posters/p41.jpg"
+ ],
+ "films": [
+  "sintel",
+  "spring"
+ ]
+}

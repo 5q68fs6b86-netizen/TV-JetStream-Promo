@@ -562,12 +562,12 @@ export const Wall: React.FC = () => {
   const f = useCurrentFrame();
   const exit = useExit(480, 24);
   const tiles = [
-    {clip: 'library', still: 'library', from: 0.3},
-    {clip: 'themes', still: 'theme-a', from: 0.3},
-    {clip: 'vod-detail', still: 'vod-detail', from: 0.3},
-    {clip: 'tab-calendar', still: 'calendar', from: 4},
+    {clip: 'library', still: 'library', from: 0.6},
+    {clip: 'themes', still: 'theme-a', from: mark('themes', 'B站粉', 0.8)},
+    {clip: '', still: 'light-home', from: 0},
+    {clip: 'vod-detail', still: 'vod-0', from: 0.4},
     {clip: 'home', still: 'home-row', from: mark('home', 'down-row2', 19)},
-    {clip: 'detail', still: 'detail', from: mark('detail', 'down-1', 5.6)},
+    {clip: '', still: 'mine', from: 0},
   ];
   const zoom = io(f, 0, 480, 0, 1, INOUT);
   return (

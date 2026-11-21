@@ -28,6 +28,12 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: 22, cache: npm}
       - run: npm ci
+      - name: Fetch captured assets
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          gh release download assets-pack -R "$GITHUB_REPOSITORY" -p assets-pack.tar -O assets-pack.tar
+          tar -xf assets-pack.tar && rm assets-pack.tar
+          du -sh public/*; head -c 400 src/assets.json; echo
       - id: m
         run: |
           frames=$(npx remotion compositions src/index.ts --quiet 2>/dev/null | awk '$1=="Promo"{print $4}')
@@ -53,6 +59,12 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: 22, cache: npm}
       - run: npm ci
+      - name: Fetch captured assets
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          gh release download assets-pack -R "$GITHUB_REPOSITORY" -p assets-pack.tar -O assets-pack.tar
+          tar -xf assets-pack.tar && rm assets-pack.tar
+          du -sh public/*; head -c 400 src/assets.json; echo
       - name: Fonts for fallback glyphs
         run: sudo apt-get install -y -qq fonts-noto-cjk >/dev/null
       - name: Render frames ${{ matrix.a }}-${{ matrix.b }} at 3840x2160 / 60 fps

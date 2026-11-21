@@ -18,7 +18,7 @@ jobs:
       runs: ${{ steps.p.outputs.runs }}
     steps:
       - id: p
-        run: echo "runs=$(python3 -c "import json;print(json.dumps([x.strip() for x in '${{ inputs.capture_runs }}'.split(',') if x.strip()]))")" >> "$GITHUB_OUTPUT"
+        run: echo "runs=$(python3 -c "import json;print(json.dumps([{'id':x.split(':')[0].strip(),'clips':(x.split(':')+[''])[1].strip()} for x in '${{ inputs.capture_runs }}'.split(',') if x.strip()]))")" >> "$GITHUB_OUTPUT"
 
   clips:
     needs: plan
@@ -30,22 +30,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
-      - name: Download capture ${{ matrix.run }}
+      - name: Download capture ${{ matrix.run.id }}
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
-          mkdir cap && gh run download ${{ matrix.run }} -R "$GITHUB_REPOSITORY" -D cap
+          mkdir cap && gh run download ${{ matrix.run.id }} -R "$GITHUB_REPOSITORY" -D cap
           d=$(dirname $(find cap -type d -name rec | head -1)); echo "CAP=$d" >> "$GITHUB_ENV"; ls "$d/rec"
       - name: Speed-ramp + interpolate to 60 fps
+        env: {CLIP_FILTER: '${{ matrix.run.clips }}'}
         run: python3 scripts/process_clips.py "$CAP" proc
       - uses: actions/upload-artifact@v4
         with:
-          name: proc-${{ matrix.run }}
+          name: proc-${{ matrix.run.id }}
           path: |
             proc
           retention-days: 7
       - uses: actions/upload-artifact@v4
         with:
-          name: capdata-${{ matrix.run }}
+          name: capdata-${{ matrix.run.id }}
           path: |
             ${{ env.CAP }}/shots
             ${{ env.CAP }}/ui
@@ -67,7 +68,7 @@ jobs:
         run: |
           IFS=',' read -ra RUNS <<< "${{ inputs.capture_runs }}"
           P=(); C=()
-          for r in "${RUNS[@]}"; do P+=("w2/proc-$r"); C+=("w2/capdata-$r"); done
+          for x in "${RUNS[@]}"; do r="${x%%:*}"; P+=("w2/proc-$r"); C+=("w2/capdata-$r"); done
           if gh release view films-pack -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             mkdir -p public/films && gh release download films-pack -R "$GITHUB_REPOSITORY" -D public/films -p '*.mp4'
           fi

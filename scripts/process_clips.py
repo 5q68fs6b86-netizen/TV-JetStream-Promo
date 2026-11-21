@@ -30,8 +30,11 @@ def frames(path):
     return [float(x) for x in out if x]
 
 
+ONLY = [x for x in os.environ.get('CLIP_FILTER', '').split('+') if x]
 meta = {}
 for name, s in CLIPS.items():
+    if ONLY and name not in ONLY:
+        continue
     src = f'{SRC}/rec/{name}.mp4'
     if not os.path.exists(src):
         print('skip', name); continue
