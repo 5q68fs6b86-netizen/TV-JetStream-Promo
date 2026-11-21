@@ -29,25 +29,30 @@ export const FONT = 'MiSans, "PingFang SC", "Noto Sans CJK SC", sans-serif';
 /* ------------------------------------------------------------------ */
 /* Fonts (block rendering until MiSans is ready)                       */
 /* ------------------------------------------------------------------ */
-if (typeof window !== 'undefined' && typeof FontFace !== 'undefined') {
-  const h = delayRender('MiSans');
-  const list: [string, number][] = [
+if (typeof window !== 'undefined' && typeof document !== 'undefined' && !(window as any).__misans) {
+  (window as any).__misans = true;
+  const faces: [string, number][] = [
     ['misans_regular.ttf', 400],
     ['misans_medium.ttf', 500],
     ['misans_semibold.ttf', 600],
   ];
-  Promise.all(
-    list.map(([f, w]) =>
-      new FontFace('MiSans', `url(${staticFile('fonts/' + f)})`, {weight: String(w)})
-        .load()
-        .then((ff) => (document as any).fonts.add(ff)),
-    ),
-  )
-    .then(() => continueRender(h))
-    .catch((e) => {
-      console.error(e);
-      continueRender(h);
-    });
+  const style = document.createElement('style');
+  style.textContent = faces
+    .map(([f, w]) => `@font-face{font-family:'MiSans';src:url('${staticFile('fonts/' + f)}') format('truetype');font-weight:${w};font-style:normal;font-display:block;}`)
+    .join('\n');
+  document.head.appendChild(style);
+  const h = delayRender('MiSans', {timeoutInMilliseconds: 90000});
+  let done = false;
+  const finish = (why: string) => {
+    if (done) return;
+    done = true;
+    console.log('[fonts] ' + why);
+    continueRender(h);
+  };
+  Promise.all(faces.map(([, w]) => (document as any).fonts.load(`${w} 40px MiSans`, '大屏回归内容 JetStream')))
+    .then((r: any[]) => finish('loaded ' + r.map((x) => x.length).join(',')))
+    .catch((e: any) => finish('error ' + e));
+  setTimeout(() => finish('timeout-guard'), 30000);
 }
 
 /* ------------------------------------------------------------------ */
