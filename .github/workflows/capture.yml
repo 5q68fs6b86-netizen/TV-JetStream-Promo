@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: media
-          key: media-v1
+          key: media-af9dca202a88522e52714c0b74dbb1fd0d27b8032183528678b5a272504f5866
 
       - name: Demo library (Blender open movies, CC BY)
         env:
