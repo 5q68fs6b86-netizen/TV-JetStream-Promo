@@ -234,8 +234,8 @@ export const Hero: React.FC = () => {
       <div
         style={{
           position: 'absolute',
-          left: 90,
-          bottom: 80,
+          right: 90,
+          top: 560,
           opacity: life(f, 400, 430, 462, 480),
           padding: '18px 30px',
           borderRadius: 20,
@@ -488,22 +488,16 @@ export const Cinema: React.FC = () => {
         </AbsoluteFill>
       </Sequence>
       <Letterbox p={lb} />
-      <Callout start={8} end={84} n="演示片库 · 辛特尔" title="选好片，按下播放" sub="海报详情 · 播放来源 · 选集一目了然" x={120} y={830} />
+      <Callout start={8} end={84} n="演示片库 · 辛特尔" title="选好片，按下播放" sub="海报详情 · 播放来源 · 选集一目了然" x={120} y={130} />
       <Callout start={120} end={226} n="播放" title="影院级观感" sub="Exo / Media3 与 MPV 双内核 · 软硬解自由切换" y={700} />
-      {/* B. real app playback with danmaku */}
-      <Sequence from={228} durationInFrames={300} layout="none">
+      {/* B+C. the real fullscreen player (paused frame): OSD, buttons, drawers — one continuous take */}
+      <Sequence from={228} durationInFrames={732} layout="none">
         <AbsoluteFill style={{opacity: appIn, transform: `scale(${1.06 - 0.06 * appIn})`}}>
-          <Footage clip="player-live" from={mark('player-live', 'playing', 1) + 2} still="player-danmaku" />
+          <Footage clip="player-osd" from={Math.max(0, mark('player-osd', 'osd', 0.3) - 0.2)} still="player-osd" />
         </AbsoluteFill>
       </Sequence>
-      <Callout start={262} end={480} n="全屏播放" title="大屏，沉浸" sub="倍速 · 画面比例 · 章节 · 选集续播 · 弹幕可调" y={760} />
-      {/* C. OSD and specs */}
-      <Sequence from={480} durationInFrames={480} layout="none">
-        <AbsoluteFill style={{opacity: io(f, 480, 506)}}>
-          <Footage clip="player-osd" from={mark('player-osd', 'osd', 0.3)} still="player-osd" />
-        </AbsoluteFill>
-      </Sequence>
-      <AbsoluteFill style={{background: 'linear-gradient(90deg, rgba(0,0,0,.65), rgba(0,0,0,0) 55%)', opacity: io(f, 490, 520)}} />
+      <Callout start={262} end={480} n="全屏播放" title="大屏，沉浸" sub="倍速 · 画面比例 · 章节 · 选集续播 · 弹幕可调" y={300} />
+      <AbsoluteFill style={{background: 'linear-gradient(90deg, rgba(0,0,0,.65), rgba(0,0,0,0) 55%)', opacity: io(f, 250, 290)}} />
       <Sequence from={500} durationInFrames={150} layout="none">
         <Spec start={0} />
       </Sequence>
