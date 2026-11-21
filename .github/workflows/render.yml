@@ -1,0 +1,103 @@
+name: Render promo 4K60
+
+on:
+  workflow_dispatch:
+    inputs:
+      shards:
+        description: parallel render shards
+        default: '10'
+      publish:
+        description: publish a GitHub Release with the film
+        type: boolean
+        default: true
+      tag:
+        description: release tag
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+      frames: ${{ steps.m.outputs.frames }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - run: npm ci
+      - id: m
+        run: |
+          frames=$(npx remotion compositions src/index.ts --quiet 2>/dev/null | awk '$1=="Promo"{print $4}')
+          [ -n "$frames" ] || frames=$(node -e "console.log(require('./src/timeline.json').total)")
+          echo "frames=$frames" >> "$GITHUB_OUTPUT"
+          python3 - <<PY >> "$GITHUB_OUTPUT"
+          import json
+          n=int("${{ inputs.shards }}"); f=int("$frames")
+          step=-(-f//n)
+          m=[{"i":i,"a":i*step,"b":min(f,(i+1)*step)-1} for i in range(n) if i*step<f]
+          print("matrix="+json.dumps({"include":m}))
+          PY
+
+  render:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - run: npm ci
+      - name: Fonts for fallback glyphs
+        run: sudo apt-get install -y -qq fonts-noto-cjk >/dev/null
+      - name: Render frames ${{ matrix.a }}-${{ matrix.b }} at 3840x2160 / 60 fps
+        run: |
+          npx remotion render src/index.ts Promo out/part-${{ matrix.i }}.mp4 \
+            --frames=${{ matrix.a }}-${{ matrix.b }} --scale=2 --codec=h264 --crf=14 \
+            --x264-preset=slow --pixel-format=yuv420p --color-space=bt709 --muted \
+            --concurrency=4 --gl=angle --timeout=120000 --log=info
+      - uses: actions/upload-artifact@v4
+        with:
+          name: part-${{ matrix.i }}
+          path: out/part-${{ matrix.i }}.mp4
+          retention-days: 3
+
+  assemble:
+    needs: [plan, render]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+      - uses: actions/download-artifact@v4
+        with: {path: parts, pattern: part-*, merge-multiple: true}
+      - name: Concatenate + mux score
+        run: |
+          ls -la parts
+          n=$(ls parts/part-*.mp4 | wc -l)
+          : > list.txt
+          for i in $(seq 0 $((n-1))); do echo "file 'parts/part-$i.mp4'" >> list.txt; done
+          ffmpeg -y -f concat -safe 0 -i list.txt -c copy video.mp4
+          mkdir -p dist
+          ffmpeg -y -i video.mp4 -i public/music.wav -map 0:v -map 1:a -c:v copy \
+            -c:a aac -b:a 320k -ar 48000 -shortest -movflags +faststart \
+            -metadata title="TV · JetStream 宣传片" dist/TV-JetStream-Promo-4K60.mp4
+          ffmpeg -y -i dist/TV-JetStream-Promo-4K60.mp4 -vf scale=1920:1080:flags=lanczos -c:v libx264 -preset slow -crf 18 \
+            -profile:v high -c:a copy -movflags +faststart dist/TV-JetStream-Promo-1080p60.mp4
+          ffmpeg -y -ss 9 -i dist/TV-JetStream-Promo-4K60.mp4 -frames:v 1 -q:v 2 dist/cover-4k.jpg
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,bit_rate -show_entries format=duration,size -of compact dist/TV-JetStream-Promo-4K60.mp4 | tee dist/specs.txt
+          sha256sum dist/* > SHA256SUMS.txt && mv SHA256SUMS.txt dist/
+      - uses: actions/upload-artifact@v4
+        with: {name: promo-final, path: dist, retention-days: 30}
+      - name: Publish release
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag='${{ inputs.tag }}'; [ -n "$tag" ] || tag="promo-$(date -u +%Y%m%d-%H%M)"
+          gh release create "$tag" dist/* -R "$GITHUB_REPOSITORY" --title "TV · JetStream 宣传片 4K60 ($tag)" \
+            --notes-file docs/RELEASE_NOTES.md

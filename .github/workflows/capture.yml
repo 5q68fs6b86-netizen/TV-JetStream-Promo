@@ -1,0 +1,96 @@
+name: Capture app UI
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: driver phase (explore | film)
+        default: explore
+      release:
+        description: wobuhui666/TV release tag (empty = latest)
+        default: ''
+      api:
+        description: emulator API level
+        default: '34'
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg python3-pil python3-numpy >/dev/null
+
+      - name: Download latest TV release APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag='${{ inputs.release }}'
+          if [ -z "$tag" ]; then tag=$(gh api repos/wobuhui666/TV/releases/latest --jq .tag_name); fi
+          echo "release=$tag" | tee -a "$GITHUB_ENV"
+          gh release download "$tag" -R wobuhui666/TV -p 'leanback-arm64_v8a.apk' -D apk
+          ls -la apk
+
+      - name: Cache demo media
+        uses: actions/cache@v4
+        with:
+          path: media
+          key: media-af9dca202a88522e52714c0b74dbb1fd0d27b8032183528678b5a272504f5866
+
+      - name: Demo library (Blender open movies, CC BY)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view media-pack -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            rm -rf media && mkdir media
+            gh release download media-pack -R "$GITHUB_REPOSITORY" -p 'media-pack.tar' -O media-pack.tar
+            tar -xf media-pack.tar -C media && rm media-pack.tar
+          elif [ ! -f media/catalog.json ]; then
+            python3 capture/prepare_media.py media
+          fi
+          rm -rf media/src
+          du -sh media; ls media/video
+
+      - name: Start demo source
+        run: |
+          nohup python3 capture/demo_server.py media 8000 > demo-server.log 2>&1 &
+          sleep 2
+          curl -s http://127.0.0.1:8000/config.json | head -c 600; echo
+          curl -s 'http://127.0.0.1:8000/api.php/provide/vod/' | head -c 400; echo
+
+      - name: Capture on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ inputs.api }}
+          target: google_apis
+          arch: x86_64
+          profile: tv_1080p
+          ram-size: 4096M
+          heap-size: 512M
+          disk-size: 8G
+          disable-animations: false
+          emulator-boot-timeout: 900
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -no-snapshot
+          script: python3 capture/driver.py apk/leanback-arm64_v8a.apk out ${{ inputs.phase }}
+
+      - name: Upload capture
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capture-${{ inputs.phase }}-${{ github.run_id }}
+          path: |
+            out
+            demo-server.log
+            media/catalog.json
+            media/img
+          retention-days: 14

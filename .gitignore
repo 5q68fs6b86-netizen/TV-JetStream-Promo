@@ -1,0 +1,8 @@
+node_modules
+out
+*.part
+/public/shots
+/public/plates
+/public/clips
+/public/films
+/public/posters
