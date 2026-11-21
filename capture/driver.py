@@ -856,6 +856,148 @@ def film2():
     shot('end')
 
 
+def home():
+    adb('shell', 'am', 'start', '--activity-clear-top', '-n', act('HomeActivity'))
+    time.sleep(5)
+
+
+def film3():
+    boot_app()
+    if not alive():
+        return
+    settle(r'查看详情', 40); time.sleep(3)
+    config_via_library()
+    home(); time.sleep(6)
+    n = shot('home-src')
+    # library tab (demo source)
+    top_tab(r'^片库$'); time.sleep(10)
+    n = shot('library')
+    anim(S)
+    r = Rec('library', 175)
+    r.mark('start'); g(2.0)
+    kp('DOWN', gap=1.6); kp('RIGHT', 3, 0.8); kp('DOWN', gap=1.6); kp('RIGHT', 2, 0.8); kp('UP', gap=1.4); kp('LEFT', 2, 0.6)
+    r.mark('end'); g(0.6)
+    r.stop()
+    anim(1)
+    n = shot('library-after')
+    # open 辛特尔 from the library / search
+    hit = [x for x in find(n, r'辛特尔') if x['b'][1] > 140]
+    if not hit:
+        top_tab(r'^搜索$'); time.sleep(4)
+        app_post({'do': 'search', 'word': '辛特尔'}); time.sleep(2)
+        press('ENTER'); time.sleep(10)
+        n = shot('search-enter')
+        hit = [x for x in find(n, r'辛特尔') if x['b'][0] > 560]
+        if not hit:
+            adb('shell', 'input', 'keyevent', '84'); time.sleep(8)
+            n = shot('search-key')
+            hit = [x for x in find(n, r'辛特尔') if x['b'][0] > 560]
+    log('sintel hits', [(x['text'], x['b']) for x in hit][:6])
+    if hit:
+        tap_node(hit[0]); time.sleep(10)
+    n = shot('sintel-page')
+    anim(S)
+    r = Rec('vod-detail', 150)
+    r.mark('start'); g(2.2)
+    kp('DOWN', gap=1.5); kp('DOWN', gap=1.5); kp('UP', 2, 0.6); g(1.0)
+    r.mark('end')
+    r.stop()
+    anim(1)
+    n = shot('sintel-page-2')
+    play = find(n, r'(立即播放|播放|全屏观看|继续观看|正片)')
+    log('play candidates', [(x['text'], x['b']) for x in play][:8])
+    if play:
+        tap_node(play[0]); time.sleep(8)
+    n = shot('player-a')
+    f2 = find(n, r'全屏')
+    if f2:
+        tap_node(f2[0]); time.sleep(6); shot('player-b')
+    r = Rec('player-live', 45)
+    r.mark('playing'); time.sleep(1)
+    for t in ['前方高能！', '这画质太顶了', '遥控器操作好顺手', '名场面打卡', '大屏党狂喜', '字幕好清晰', '这配色好高级',
+              '收藏了！', '一起看真香', '比原版顺滑多了', '龙！！！', '泪目了', '弹幕护体', '好看好看', '截图当壁纸', '开源万岁',
+              '片头已跳过', '倍速长按好评', '这一幕绝了', '再看一遍']:
+        app_post({'do': 'danmaku', 'text': t}); time.sleep(0.5)
+    time.sleep(8); r.mark('end')
+    r.stop()
+    shot('player-danmaku')
+    app_post({'do': 'control', 'type': 'pause'}); time.sleep(2)
+    shot('player-paused')
+    anim(S)
+    r = Rec('player-osd', 175)
+    r.mark('osd'); kp('OK', gap=2.0)
+    r.mark('osd-down'); kp('DOWN', gap=1.6)
+    for i in range(3):
+        r.mark(f'osd-right-{i}'); kp('RIGHT', gap=1.0)
+    r.mark('drawer'); kp('OK', gap=2.4)
+    kp('DOWN', 2, 0.9)
+    r.mark('drawer-back'); kp('BACK', gap=1.4)
+    kp('LEFT', gap=1.0)
+    r.mark('drawer2'); kp('OK', gap=2.4)
+    kp('DOWN', 2, 0.9)
+    r.mark('back'); kp('BACK', gap=1.4)
+    r.mark('end')
+    r.stop()
+    anim(1)
+    shot('player-osd-after')
+    # themes
+    home(); time.sleep(4)
+    top_tab(r'^我的$'); time.sleep(5)
+    n = shot('mine')
+    st = find(n, r'^设置$', exact=True)
+    if st:
+        tap_node(st[-1]); time.sleep(4)
+    n = shot('settings-0')
+    for sec in ('应用', '首页与发现', '播放', '弹幕'):
+        n = dump()
+        hs = [x for x in find(n, f'^{sec}$', exact=True) if x['b'][0] < 330]
+        if not hs:
+            continue
+        tap_node(hs[0]); time.sleep(2.5)
+        shot(f'set-{sec}')
+        for i in range(4):
+            n = dump()
+            if find(n, r'^主题色彩$', exact=True):
+                break
+            press('RIGHT'); press('DOWN', 4, 0.3); time.sleep(1)
+        if find(n, r'^主题色彩$', exact=True):
+            break
+    h = find(dump(), r'^主题色彩$', exact=True)
+    log('theme row', bool(h))
+    if h:
+        tap_node(h[0]); time.sleep(3)
+        n = shot('dlg-theme')
+        names = ('B站粉', '翡翠绿', '琥珀金', '曜石紫', '赤焰红', '星际蓝')
+        opts = {x['text']: x for x in n if (x['text'] or '') in names}
+        log('opts', list(opts))
+        anim(S)
+        r = Rec('themes', 175)
+        for nm in names:
+            n2 = dump()
+            o = next((x for x in n2 if x['text'] == nm), None)
+            if o is None:
+                h2 = find(n2, '^主题色彩$', exact=True)
+                if h2:
+                    tap_node(h2[0]); g(1.4)
+                    n2 = dump(); o = next((x for x in n2 if x['text'] == nm), None)
+            if o is None:
+                continue
+            r.mark(nm); tap_node(o); g(2.6)
+        r.mark('end')
+        r.stop()
+        anim(1)
+        shot('themes-after')
+        press('BACK'); time.sleep(1)
+    m = find(dump(), r'^外观模式$', exact=True)
+    if m:
+        tap_node(m[0]); time.sleep(2.5); shot('dlg-mode')
+        lt = find(dump(), r'^浅色$', exact=True)
+        if lt:
+            tap_node(lt[0]); time.sleep(4); shot('light-settings')
+            home(); time.sleep(8); shot('light-home')
+    shot('end')
+
+
 if __name__ == '__main__':
     t = time.time()
     try:

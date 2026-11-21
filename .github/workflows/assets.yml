@@ -1,0 +1,83 @@
+name: Build promo assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      capture_runs:
+        description: capture run ids, comma separated (later runs override earlier clips)
+        required: true
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      runs: ${{ steps.p.outputs.runs }}
+    steps:
+      - id: p
+        run: echo "runs=$(python3 -c "import json;print(json.dumps([x.strip() for x in '${{ inputs.capture_runs }}'.split(',') if x.strip()]))")" >> "$GITHUB_OUTPUT"
+
+  clips:
+    needs: plan
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        run: ${{ fromJson(needs.plan.outputs.runs) }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+      - name: Download capture ${{ matrix.run }}
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          mkdir cap && gh run download ${{ matrix.run }} -R "$GITHUB_REPOSITORY" -D cap
+          d=$(dirname $(find cap -type d -name rec | head -1)); echo "CAP=$d" >> "$GITHUB_ENV"; ls "$d/rec"
+      - name: Speed-ramp + interpolate to 60 fps
+        run: python3 scripts/process_clips.py "$CAP" proc
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proc-${{ matrix.run }}
+          path: |
+            proc
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capdata-${{ matrix.run }}
+          path: |
+            ${{ env.CAP }}/shots
+            ${{ env.CAP }}/ui
+          retention-days: 7
+
+  pack:
+    needs: clips
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq python3-pil >/dev/null
+      - name: Download cross-run artifacts
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          # artifacts were uploaded by THIS run's matrix jobs
+          gh run download ${{ github.run_id }} -R "$GITHUB_REPOSITORY" -D w2
+          ls w2
+      - name: Assemble public/
+        run: |
+          IFS=',' read -ra RUNS <<< "${{ inputs.capture_runs }}"
+          P=(); C=()
+          for r in "${RUNS[@]}"; do P+=("w2/proc-$r"); C+=("w2/capdata-$r"); done
+          if gh release view films-pack -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            mkdir -p public/films && gh release download films-pack -R "$GITHUB_REPOSITORY" -D public/films -p '*.mp4'
+          fi
+          tag=$(gh api repos/wobuhui666/TV/releases/latest --jq .tag_name)
+          python3 scripts/assemble_assets.py public "$tag" "${P[@]}" -- "${C[@]}"
+          tar -cf assets-pack.tar public/clips public/shots public/posters src/assets.json $( [ -d public/films ] && echo public/films )
+          ls -la assets-pack.tar
+        env: {GH_TOKEN: '${{ github.token }}'}
+      - name: Publish assets-pack
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          gh release delete assets-pack -R "$GITHUB_REPOSITORY" -y --cleanup-tag 2>/dev/null || true
+          gh release create assets-pack assets-pack.tar -R "$GITHUB_REPOSITORY" --title "Promo assets (captures)" --notes "Processed 60 fps captures, stills and posters for the Remotion render." --prerelease
