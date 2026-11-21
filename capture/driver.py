@@ -225,6 +225,7 @@ def set_config(kind, url, name):
 def boot_app():
     badging()
     log(adb('install', '-r', '-g', APK, timeout=300))
+    adb('shell', 'appops', 'set', APK and 'x' or 'x', 'noop')
     adb('shell', 'settings', 'put', 'global', 'window_animation_scale', '1')
     adb('shell', 'settings', 'put', 'global', 'transition_animation_scale', '1')
     adb('shell', 'settings', 'put', 'global', 'animator_duration_scale', '1')
@@ -236,6 +237,7 @@ def boot_app():
     adb('forward', 'tcp:9978', 'tcp:9978')
     adb('shell', 'cmd', 'locale', 'set-app-locales', PKG, '--locales', 'zh-CN')
     adb('shell', 'settings', 'put', 'system', 'system_locales', 'zh-CN')
+    adb('shell', 'appops', 'set', '--uid', PKG, 'MANAGE_EXTERNAL_STORAGE', 'allow')
     launch(); time.sleep(16)
     dismiss_dialogs()
     shot('launch')
@@ -407,6 +409,240 @@ def explore2():
     press('DOWN'); time.sleep(4); shot('live-next'); r.mark('live-next')
     press('BACK'); time.sleep(1.5); press('BACK'); time.sleep(2)
     r.stop()
+    shot('end')
+
+
+S = 4  # animation stretch: animator scale and key gaps are multiplied by S, footage is sped up S x in post
+
+
+def anim(scale):
+    for k in ('window_animation_scale', 'transition_animation_scale', 'animator_duration_scale'):
+        adb('shell', 'settings', 'put', 'global', k, str(scale))
+
+
+def g(sec):
+    time.sleep(sec * S)
+
+
+def kp(name, n=1, gap=0.6):
+    for _ in range(n):
+        adb('shell', 'input', 'keyevent', str(K[name]))
+        g(gap)
+
+
+def settle(pat, timeout=40):
+    n = wait_text(pat, timeout)
+    log('settle', pat, bool(n))
+    return n
+
+
+def goto_settings():
+    adb('shell', 'am', 'start', '-n', act('SettingActivity'))
+    time.sleep(4)
+    return dump()
+
+
+def config_row(kind, url, name):
+    n = goto_settings()
+    rows = [x for x in find(n, f'^{kind}$', exact=True) if x['b'][0] > 300]
+    if not rows:
+        log('no settings row', kind); shot(f'cfg-miss-{kind}'); return False
+    tap_node(rows[0]); time.sleep(2.5)
+    n = shot(f'cfg-dialog-{kind}')
+    app_post({'do': 'setting', 'text': url, 'name': name}); time.sleep(1.5)
+    n = dump()
+    if not find(n, re.escape(url[:20])):
+        edits = [x for x in n if x['cls'] == 'EditText']
+        if edits:
+            tap_node(edits[-1]); time.sleep(0.6)
+            adb('shell', 'input', 'text', url.replace('&', '\\&'))
+            time.sleep(0.8); adb('shell', 'input', 'keyevent', '111')
+    shot(f'cfg-filled-{kind}')
+    if not tap_text(r'^确定$', exact=True, wait=3):
+        press('ENTER')
+    time.sleep(8)
+    shot(f'cfg-after-{kind}')
+    press('BACK'); time.sleep(2)
+    return True
+
+
+def film():
+    boot_app()
+    if not alive():
+        return
+    settle(r'查看详情', 40)
+    time.sleep(6)
+    shot('ready')
+    # ---- 1. home (slow-motion UI) ----
+    anim(S)
+    r = Rec('home', 178)
+    r.mark('start'); g(2.5)
+    for i in range(2):
+        r.mark(f'hero-right-{i}'); kp('RIGHT', gap=3.0)
+    r.mark('down-row0'); kp('DOWN', gap=2.0)
+    for i in range(5):
+        kp('RIGHT', gap=0.75)
+    r.mark('down-row1'); kp('DOWN', gap=1.6)
+    kp('RIGHT', 3, 0.7)
+    r.mark('down-row2'); kp('DOWN', gap=1.6)
+    kp('RIGHT', 3, 0.7)
+    r.mark('down-row3'); kp('DOWN', gap=1.6)
+    kp('RIGHT', 2, 0.7)
+    r.mark('up'); kp('UP', 6, 0.35); g(2.0)
+    r.mark('end')
+    r.stop()
+    anim(1)
+    shot('home-after')
+    # ---- 2. detail ----
+    n = dump()
+    anim(S)
+    r = Rec('detail', 150)
+    r.mark('open')
+    if not tap_text(r'查看详情', nodes=n, wait=0.1):
+        adb('shell', 'input', 'keyevent', '23')
+    g(3.5)
+    for i in range(4):
+        r.mark(f'down-{i}'); kp('DOWN', gap=1.8)
+    kp('RIGHT', 3, 0.7)
+    r.mark('up'); kp('UP', 6, 0.4); g(1.5)
+    r.mark('end')
+    r.stop()
+    anim(1)
+    shot('detail-after')
+    press('BACK'); time.sleep(3)
+    # ---- 3. tabs (calendar, library, search, mine) ----
+    for name, pat in (('calendar', r'^日历$'), ('library', r'^片库$'), ('search', r'^搜索$'), ('mine', r'^我的$')):
+        n = dump()
+        hit = [x for x in find(n, pat, exact=True) if x['b'][1] < 140]
+        if not hit:
+            log('no tab', name); continue
+        tap_node(hit[0]); time.sleep(6)
+        shot(f'tab-{name}')
+        anim(S)
+        r = Rec(f'tab-{name}', 120)
+        r.mark('start'); g(1.5)
+        kp('DOWN', gap=1.6); kp('RIGHT', 3, 0.8); kp('DOWN', gap=1.6); kp('RIGHT', 2, 0.8)
+        r.mark('end'); g(0.5)
+        r.stop()
+        anim(1)
+        shot(f'tab-{name}-after')
+        kp('UP', 6, 0.1); time.sleep(1)
+        if not alive():
+            launch(); time.sleep(10)
+    # ---- 4. settings & themes ----
+    n = goto_settings()
+    shot('settings')
+    for sec in ('首页与发现', '播放', '弹幕', '应用'):
+        n = dump()
+        hit = [x for x in find(n, f'^{sec}$', exact=True) if x['b'][0] < 300]
+        if hit:
+            tap_node(hit[0]); time.sleep(2.5); shot(f'settings-{sec}')
+            for i in range(3):
+                press('DOWN'); time.sleep(0.6)
+            shot(f'settings-{sec}-down')
+    n = dump()
+    hit = [x for x in find(n, '^应用$', exact=True) if x['b'][0] < 300]
+    if hit:
+        tap_node(hit[0]); time.sleep(2)
+    for row in ('主题色彩', '外观模式'):
+        n = dump()
+        h = find(n, f'^{row}$', exact=True)
+        log('row', row, bool(h))
+        if h:
+            tap_node(h[0]); time.sleep(2.5); shot(f'row-{row}')
+            press('BACK'); time.sleep(1.5)
+    press('BACK'); time.sleep(2)
+    # ---- 5. configure demo sources ----
+    config_row('点播', f'{BASE}/config.json', '演示片库')
+    config_row('直播', f'{BASE}/live.m3u', '演示直播')
+    if not alive():
+        launch(); time.sleep(12)
+    adb('shell', 'am', 'start', '-n', act('HomeActivity')); time.sleep(10)
+    shot('home-with-source')
+    for i in range(4):
+        press('DOWN'); time.sleep(2); shot(f'home-src-d{i}')
+    press('UP', 8, 0.3); time.sleep(1.5)
+    # top-right switcher (影视 / 直播)
+    n = dump()
+    hit = find(n, r'^(影视|直播)$', exact=True)
+    log('switcher', [(x['text'], x['b']) for x in hit])
+    # ---- 6. search the demo library -> detail -> play ----
+    n = dump()
+    hit = [x for x in find(n, r'^搜索$', exact=True) if x['b'][1] < 140]
+    if hit:
+        tap_node(hit[0]); time.sleep(4); shot('search-open')
+        n = dump()
+        edits = [x for x in n if x['cls'] == 'EditText']
+        if edits:
+            tap_node(edits[0]); time.sleep(1)
+        app_post({'do': 'search', 'word': '辛特尔'}); time.sleep(10)
+        shot('search-result')
+    # direct: push a CMS item via search event already; fallback play by intent
+    n = dump()
+    hit = find(n, r'辛特尔')
+    if hit:
+        tap_node(hit[-1]); time.sleep(8); shot('vod-detail')
+    else:
+        adb('shell', 'am', 'start', '-a', 'android.intent.action.SEND', '-t', 'text/plain', '--es', 'android.intent.extra.TEXT',
+            f'{BASE}/video/sintel.mp4', '-n', act('HomeActivity'))
+        time.sleep(10)
+    shot('vod-page')
+    n = dump()
+    full = find(n, r'(全屏|播放|立即播放|继续播放)')
+    log('play buttons', [(x['text'], x['b']) for x in full][:6])
+    if full:
+        tap_node(full[0]); time.sleep(8)
+    else:
+        press('OK'); time.sleep(8)
+    shot('player-0')
+    r = Rec('player-live', 60)
+    r.mark('playing')
+    for i, t in enumerate(['前方高能！', '这画质太顶了', '遥控器操作好顺手', '名场面打卡', '大屏党狂喜', '字幕好清晰', '这配色好高级',
+                           '收藏了！', '一起看真香', '比原版顺滑多了', '龙！！！', '泪目了', '弹幕护体', '好看好看', '截图当壁纸']):
+        app_post({'do': 'danmaku', 'text': t}); time.sleep(0.6)
+    time.sleep(6); r.mark('end')
+    r.stop()
+    shot('player-danmaku')
+    # paused OSD in slow motion
+    app_post({'do': 'control', 'type': 'pause'}); time.sleep(1.5)
+    anim(S)
+    r = Rec('player-osd', 170)
+    r.mark('osd'); kp('OK', gap=2.0)
+    r.mark('osd-down'); kp('DOWN', gap=1.5)
+    kp('RIGHT', gap=1.0); kp('RIGHT', gap=1.0)
+    r.mark('drawer'); kp('OK', gap=2.5)
+    kp('DOWN', 2, 0.9)
+    r.mark('drawer-back'); kp('BACK', gap=1.5)
+    kp('RIGHT', gap=1.0)
+    r.mark('drawer2'); kp('OK', gap=2.5)
+    kp('DOWN', 2, 0.9)
+    r.mark('back'); kp('BACK', gap=1.5)
+    r.mark('end')
+    r.stop()
+    anim(1)
+    shot('player-osd-after')
+    press('BACK'); time.sleep(1.5); press('BACK'); time.sleep(1.5); press('BACK'); time.sleep(2)
+    if not alive():
+        launch(); time.sleep(10)
+    # ---- 7. live ----
+    adb('shell', 'am', 'start', '-n', act('LiveActivity')); time.sleep(10)
+    shot('live-0')
+    r = Rec('live', 90)
+    r.mark('live'); time.sleep(4)
+    r.mark('list'); press('OK'); time.sleep(3)
+    press('DOWN'); time.sleep(1.5); press('DOWN'); time.sleep(1.5)
+    r.mark('groups'); press('LEFT'); time.sleep(2)
+    press('DOWN'); time.sleep(1.5)
+    r.mark('epg'); press('RIGHT'); time.sleep(1.2); press('RIGHT'); time.sleep(1.2); press('RIGHT'); time.sleep(2.5)
+    r.mark('back'); press('BACK'); time.sleep(2)
+    r.mark('zap'); press('UP'); time.sleep(5)
+    r.mark('end')
+    r.stop()
+    shot('live-after')
+    press('OK'); time.sleep(2); shot('live-list')
+    press('LEFT'); time.sleep(2); shot('live-groups')
+    press('RIGHT'); press('RIGHT'); time.sleep(2); shot('live-epg')
+    press('BACK'); press('BACK'); time.sleep(2)
     shot('end')
 
 
