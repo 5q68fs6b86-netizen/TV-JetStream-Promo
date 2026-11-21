@@ -59,45 +59,40 @@ SERIES = ('llama', '小羊驼卡米南德斯', 'Caminandes', '剧集', 2013, 'Pa
 ])
 
 
+UA_STR = 'TVJetStreamPromoBot/1.0 (https://github.com/5q68fs6b86-netizen/TV-JetStream-Promo; promo@users.noreply.github.com) curl/8'
+
+
 def fetch(urls, dst):
+    import time as _t
     if os.path.exists(dst) and os.path.getsize(dst) > 1 << 20:
         return dst
-    import time as _t
-    for u in [x for x in urls for _ in range(3)]:
-        try:
-            req = urllib.request.Request(u, headers=UA)
-            with urllib.request.urlopen(req, timeout=60) as r, open(dst + '.part', 'wb') as f:
-                while True:
-                    b = r.read(1 << 20)
-                    if not b:
-                        break
-                    f.write(b)
-            if os.path.getsize(dst + '.part') < 1 << 20:
-                raise RuntimeError('too small')
-            if u.endswith('.zip'):
-                import zipfile
-                with zipfile.ZipFile(dst + '.part') as z:
-                    name = max(z.namelist(), key=lambda n: z.getinfo(n).file_size)
-                    with z.open(name) as s, open(dst, 'wb') as d:
-                        while True:
-                            b = s.read(1 << 20)
-                            if not b:
-                                break
-                            d.write(b)
-                os.remove(dst + '.part')
-            else:
-                os.replace(dst + '.part', dst)
-            print('  ok', u, flush=True)
-            return dst
-        except Exception as e:
-            print('  fail', u, e, flush=True)
-            if '429' in str(e):
-                _t.sleep(15)
+    for u in urls:
+        for attempt in range(4):
+            part = dst + '.part'
+            r = subprocess.run(['curl', '-sS', '-L', '--fail', '-A', UA_STR, '--retry', '2', '-o', part, '-w', '%{http_code}', u],
+                               capture_output=True, text=True)
+            code = r.stdout.strip()[-3:]
+            if r.returncode == 0 and os.path.exists(part) and os.path.getsize(part) > 1 << 20:
+                if u.endswith('.zip'):
+                    import zipfile
+                    with zipfile.ZipFile(part) as z:
+                        name = max(z.namelist(), key=lambda n: z.getinfo(n).file_size)
+                        with z.open(name) as s_, open(dst, 'wb') as d:
+                            while True:
+                                b_ = s_.read(1 << 20)
+                                if not b_:
+                                    break
+                                d.write(b_)
+                    os.remove(part)
+                else:
+                    os.replace(part, dst)
+                print('  ok', u, flush=True)
+                return dst
+            print('  fail', code, u, r.stderr.strip()[:120], flush=True)
+            if code == '429':
+                _t.sleep(20 * (attempt + 1))
                 continue
-            if 'HTTP Error 404' in str(e):
-                # skip remaining retries of this url
-                urls = [x for x in urls if x != u]
-            continue
+            break
     return None
 
 
@@ -112,7 +107,7 @@ def run(cmd):
     subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
-def excerpt(src, dst, start, length=240):
+def excerpt(src, dst, start, length=150):
     d = duration(src)
     if d and start + 20 > d:
         start = max(0, d * 0.1)
@@ -195,7 +190,7 @@ def build_series():
 
 
 if __name__ == '__main__':
-    with cf.ThreadPoolExecutor(3) as ex:
+    with cf.ThreadPoolExecutor(2) as ex:
         films = list(ex.map(build_film, FILMS))
     series = build_series()
     items = [x for x in films if x] + ([series] if series else [])

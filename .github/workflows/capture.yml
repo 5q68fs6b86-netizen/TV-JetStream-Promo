@@ -45,13 +45,21 @@ jobs:
         uses: actions/cache@v4
         with:
           path: media
-          key: media-${{ hashFiles('capture/prepare_media.py') }}
+          key: media-v1
 
-      - name: Build demo library (Blender open movies, CC BY)
+      - name: Demo library (Blender open movies, CC BY)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          python3 capture/prepare_media.py media
-          rm -rf media/src/*.bin media/src/*.part
-          du -sh media; ls media/img | head -50
+          if gh release view media-pack -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            rm -rf media && mkdir media
+            gh release download media-pack -R "$GITHUB_REPOSITORY" -p 'media-pack.tar' -O media-pack.tar
+            tar -xf media-pack.tar -C media && rm media-pack.tar
+          elif [ ! -f media/catalog.json ]; then
+            python3 capture/prepare_media.py media
+          fi
+          rm -rf media/src
+          du -sh media; ls media/video
 
       - name: Start demo source
         run: |

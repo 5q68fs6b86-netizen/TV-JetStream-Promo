@@ -234,7 +234,9 @@ def boot_app():
     adb('shell', 'wm', 'size', '1920x1080')
     adb('shell', 'wm', 'density', '320')
     adb('forward', 'tcp:9978', 'tcp:9978')
-    launch(); time.sleep(14)
+    adb('shell', 'cmd', 'locale', 'set-app-locales', PKG, '--locales', 'zh-CN')
+    adb('shell', 'settings', 'put', 'system', 'system_locales', 'zh-CN')
+    launch(); time.sleep(16)
     dismiss_dialogs()
     shot('launch')
     log('alive', alive())
@@ -293,6 +295,118 @@ def explore():
         for i in range(8):
             press('DOWN'); time.sleep(0.8); shot(f'setting-down-{i}')
         press('BACK'); time.sleep(2)
+    shot('end')
+
+
+def act(name):
+    return f'{PKG}/com.fongmi.android.tv.ui.activity.{name}'
+
+
+def tab(pat):
+    n = dump()
+    hit = [x for x in find(n, pat, exact=True) if x['b'][1] < 120]
+    if not hit:
+        log('no tab', pat); return False
+    tap_node(hit[0]); return True
+
+
+def explore2():
+    boot_app()
+    if not alive():
+        return
+    # A. home tour
+    r = Rec('home', 120)
+    time.sleep(5); shot('home-hero'); r.mark('hero')
+    for i in range(3):
+        press('RIGHT'); time.sleep(3.0); shot(f'hero-right-{i}'); r.mark(f'hero-right-{i}')
+    press('DOWN'); time.sleep(2.5); shot('row-0'); r.mark('row-0')
+    for i in range(6):
+        press('RIGHT'); time.sleep(0.9)
+    shot('row-0-right'); r.mark('row-0-right')
+    for i in range(5):
+        press('DOWN'); time.sleep(2.2); shot(f'row-{i + 1}'); r.mark(f'row-{i + 1}')
+        press('RIGHT'); time.sleep(0.9); press('RIGHT'); time.sleep(1.2)
+    press('UP', 12, 0.3); time.sleep(2.5); shot('home-top'); r.mark('home-top')
+    r.stop()
+    # B. tabs
+    r = Rec('tabs', 160)
+    for name, pat in (('library', r'(片库|Library)'), ('calendar', r'(日历|Calendar)'), ('search', r'(搜索|Search)'), ('mytv', r'(我的|My TV|我的电视)')):
+        if tab(pat):
+            r.mark(name); time.sleep(5); shot(f'tab-{name}')
+            for i in range(3):
+                press('DOWN'); time.sleep(1.8); shot(f'tab-{name}-d{i}')
+            press('RIGHT'); time.sleep(1.5); shot(f'tab-{name}-r')
+            press('UP', 6, 0.3); time.sleep(1.2)
+    r.stop()
+    # C. My TV deep look (settings entry discovery)
+    tab(r'(我的|My TV|我的电视)'); time.sleep(3)
+    for i in range(10):
+        press('DOWN'); time.sleep(1.0); shot(f'mytv-scan-{i}')
+    press('UP', 12, 0.25)
+    # D. try settings activity directly
+    log(adb('shell', 'am', 'start', '-n', act('SettingActivity')))
+    time.sleep(4); shot('settings-direct')
+    for i in range(8):
+        press('DOWN'); time.sleep(0.9); shot(f'settings-d{i}')
+    press('BACK'); time.sleep(2)
+    # E. back home -> detail page
+    tab(r'(首页|Home)'); time.sleep(3)
+    r = Rec('detail', 90)
+    n = dump()
+    if not tap_text(r'(查看详情|View details)', nodes=n, wait=6):
+        press('OK'); time.sleep(6)
+    shot('detail'); r.mark('detail')
+    for i in range(5):
+        press('DOWN'); time.sleep(2.2); shot(f'detail-d{i}'); r.mark(f'detail-d{i}')
+    press('UP', 6, 0.3); time.sleep(2)
+    r.stop()
+    press('BACK'); time.sleep(2)
+    # F. playback via share intent
+    r = Rec('play', 170)
+    adb('shell', 'am', 'start', '-a', 'android.intent.action.SEND', '-t', 'text/plain', '--es', 'android.intent.extra.TEXT',
+        f'{BASE}/video/sintel.mp4', '-n', act('HomeActivity'))
+    time.sleep(12); shot('play-0'); r.mark('play-0')
+    for i, t in enumerate(['前方高能！', '这画质太顶了', '遥控器操作好顺手', '名场面打卡', '弹幕护体', '大屏党狂喜', '字幕好清晰',
+                           '这配色好高级', '收藏了！', '一起看真香', '比原版顺滑多了', 'HDR 太震撼', '追更日历救我', '龙！！！', '泪目了']):
+        app_post({'do': 'danmaku', 'text': t}); time.sleep(0.45)
+    time.sleep(2); shot('play-danmaku'); r.mark('danmaku')
+    press('OK'); time.sleep(2.5); shot('play-osd'); r.mark('osd')
+    press('DOWN'); time.sleep(2); shot('play-osd-d1'); r.mark('osd-d1')
+    press('RIGHT'); time.sleep(1.5); shot('play-osd-d1-r')
+    press('RIGHT'); time.sleep(1.5); shot('play-osd-d1-rr')
+    press('OK'); time.sleep(2.5); shot('play-drawer'); r.mark('drawer')
+    press('DOWN'); time.sleep(1.2); press('DOWN'); time.sleep(1.5); shot('play-drawer-d')
+    press('BACK'); time.sleep(1.5); shot('play-after-back')
+    press('BACK'); time.sleep(1.5); shot('play-after-back2')
+    press('RIGHT'); time.sleep(1.5); shot('play-seek'); r.mark('seek')
+    press('UP'); time.sleep(2); shot('play-up'); r.mark('up')
+    press('BACK'); time.sleep(1.5)
+    press('MENU'); time.sleep(2); shot('play-menu'); r.mark('menu')
+    press('BACK'); time.sleep(1.5)
+    r.stop()
+    press('BACK'); time.sleep(1.5); press('BACK'); time.sleep(2); shot('after-play')
+    if not alive():
+        launch(); time.sleep(10)
+    # G. live via m3u file
+    m3u = urllib.request.urlopen('http://127.0.0.1:8000/live.m3u').read()
+    open('/tmp/demo.m3u', 'wb').write(m3u)
+    adb('push', '/tmp/demo.m3u', '/sdcard/Download/demo.m3u')
+    r = Rec('live', 120)
+    log(adb('shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', 'file:///sdcard/Download/demo.m3u', '-t', 'text/plain', '-n', act('HomeActivity')))
+    time.sleep(10); shot('live-after-intent'); r.mark('live-intent')
+    n = dump()
+    if not find(n, r'(光影|频道|直播)'):
+        tab(r'(首页|Home)'); time.sleep(2)
+        tap_text(r'^(直播|Live)$', exact=True, wait=8)
+    time.sleep(4); shot('live-0'); r.mark('live-0')
+    press('OK'); time.sleep(2.5); shot('live-list'); r.mark('live-list')
+    press('DOWN'); time.sleep(1.2); press('DOWN'); time.sleep(1.5); shot('live-list-2')
+    press('LEFT'); time.sleep(1.5); shot('live-groups')
+    press('RIGHT'); time.sleep(1); press('RIGHT'); time.sleep(1.5); shot('live-epg'); r.mark('live-epg')
+    press('BACK'); time.sleep(1.5); shot('live-back')
+    press('DOWN'); time.sleep(4); shot('live-next'); r.mark('live-next')
+    press('BACK'); time.sleep(1.5); press('BACK'); time.sleep(2)
+    r.stop()
     shot('end')
 
 
