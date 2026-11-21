@@ -646,6 +646,216 @@ def film():
     shot('end')
 
 
+def top_tab(pat):
+    n = dump()
+    hit = [x for x in find(n, pat, exact=True) if x['b'][1] < 140]
+    if not hit:
+        log('no top tab', pat); return None
+    tap_node(hit[0]); return hit[0]
+
+
+def config_via_library():
+    top_tab(r'^片库$'); time.sleep(4)
+    n = shot('lib-or-settings')
+    ok = False
+    for kind, url, name in (('点播', f'{BASE}/config.json', '演示片库'), ('直播', f'{BASE}/live.m3u', '演示直播')):
+        n = dump()
+        rows = [x for x in find(n, f'^{kind}$', exact=True) if x['b'][0] > 330]
+        log('rows', kind, [x['b'] for x in rows])
+        if not rows:
+            continue
+        tap_node(rows[0]); time.sleep(3)
+        n = shot(f'cfg-dialog-{kind}')
+        app_post({'do': 'setting', 'text': url, 'name': name}); time.sleep(2)
+        n = dump()
+        if not find(n, re.escape(url[7:25])):
+            edits = [x for x in n if x['cls'] == 'EditText']
+            log('typing into', len(edits))
+            if edits:
+                tap_node(edits[-1]); time.sleep(0.8)
+                adb('shell', 'input', 'text', url); time.sleep(1)
+        shot(f'cfg-filled-{kind}')
+        if not tap_text(r'^确定$', exact=True, wait=2):
+            press('ENTER')
+        time.sleep(10)
+        shot(f'cfg-after-{kind}')
+        ok = True
+    return ok
+
+
+def film2():
+    boot_app()
+    if not alive():
+        return
+    settle(r'查看详情', 40); time.sleep(4)
+    config_via_library()
+    for _ in range(3):
+        n = dump()
+        if find(n, r'^(首页|片库|日历|搜索|我的)$'):
+            break
+        press('BACK'); time.sleep(2)
+    if not alive():
+        launch(); time.sleep(12)
+    time.sleep(6); shot('home-src')
+    # library tab with the demo source
+    top_tab(r'^片库$'); time.sleep(8)
+    shot('library')
+    anim(S)
+    r = Rec('library', 170)
+    r.mark('start'); g(2.0)
+    kp('DOWN', gap=1.6); kp('RIGHT', 3, 0.8); kp('DOWN', gap=1.6); kp('RIGHT', 3, 0.8); kp('DOWN', gap=1.6); kp('RIGHT', 2, 0.8)
+    r.mark('end'); g(0.5)
+    r.stop()
+    anim(1)
+    shot('library-after')
+    for i in range(3):
+        press('DOWN'); time.sleep(1.5); shot(f'library-d{i}')
+    press('UP', 8, 0.3); time.sleep(1)
+    # mine tab -> settings
+    top_tab(r'^我的$'); time.sleep(5)
+    n = shot('mine')
+    for i in range(5):
+        press('DOWN'); time.sleep(1.2); shot(f'mine-d{i}')
+    press('UP', 8, 0.3); time.sleep(1)
+    # search demo library
+    top_tab(r'^搜索$'); time.sleep(4)
+    app_post({'do': 'search', 'word': '辛特尔'}); time.sleep(12)
+    n = shot('search-sintel')
+    hits = [x for x in find(n, r'辛特尔') if x['b'][0] > 600]
+    log('search hits', [(x['text'], x['b']) for x in hits][:8])
+    if hits:
+        tap_node(hits[0]); time.sleep(8)
+    n = shot('sintel-page')
+    # demo detail (CMS) in slow motion
+    anim(S)
+    r = Rec('vod-detail', 120)
+    r.mark('start'); g(2.0)
+    kp('DOWN', gap=1.5); kp('DOWN', gap=1.5); kp('UP', 2, 0.6); g(1.0)
+    r.mark('end')
+    r.stop()
+    anim(1)
+    n = shot('sintel-page-2')
+    # start playback (fullscreen)
+    play = find(n, r'(立即播放|播放|全屏观看|继续观看)')
+    log('play candidates', [(x['text'], x['b']) for x in play][:6])
+    if play:
+        tap_node(play[0]); time.sleep(8)
+    else:
+        press('OK'); time.sleep(8)
+    n = shot('player-a')
+    if find(n, r'全屏'):
+        tap_text(r'全屏', wait=6); shot('player-b')
+    r = Rec('player-live', 45)
+    r.mark('playing'); time.sleep(1)
+    for t in ['前方高能！', '这画质太顶了', '遥控器操作好顺手', '名场面打卡', '大屏党狂喜', '字幕好清晰', '这配色好高级',
+              '收藏了！', '一起看真香', '比原版顺滑多了', '龙！！！', '泪目了', '弹幕护体', '好看好看', '截图当壁纸', '开源万岁',
+              '片头已跳过', '倍速长按好评', '这一幕绝了', '再看一遍']:
+        app_post({'do': 'danmaku', 'text': t}); time.sleep(0.5)
+    time.sleep(8); r.mark('end')
+    r.stop()
+    shot('player-danmaku')
+    app_post({'do': 'control', 'type': 'pause'}); time.sleep(2)
+    shot('player-paused')
+    anim(S)
+    r = Rec('player-osd', 175)
+    r.mark('osd'); kp('OK', gap=2.0)
+    r.mark('osd-down'); kp('DOWN', gap=1.6)
+    for i in range(3):
+        r.mark(f'osd-right-{i}'); kp('RIGHT', gap=1.0)
+    r.mark('drawer'); kp('OK', gap=2.4)
+    kp('DOWN', 2, 0.9)
+    r.mark('drawer-back'); kp('BACK', gap=1.4)
+    kp('LEFT', gap=1.0)
+    r.mark('drawer2'); kp('OK', gap=2.4)
+    kp('DOWN', 2, 0.9)
+    r.mark('back'); kp('BACK', gap=1.4)
+    r.mark('end')
+    r.stop()
+    anim(1)
+    shot('player-osd-after')
+    for i in range(3):
+        press('BACK'); time.sleep(1.5)
+    if not alive():
+        launch(); time.sleep(10)
+    # live
+    adb('shell', 'am', 'start', '-n', act('LiveActivity')); time.sleep(12)
+    shot('live-0')
+    r = Rec('live', 80)
+    r.mark('live'); time.sleep(4)
+    r.mark('list'); press('OK'); time.sleep(3)
+    press('DOWN'); time.sleep(1.5); press('DOWN'); time.sleep(1.5)
+    r.mark('groups'); press('LEFT'); time.sleep(2)
+    press('DOWN'); time.sleep(1.5)
+    r.mark('epg'); press('RIGHT'); time.sleep(1.2); press('RIGHT'); time.sleep(1.2); press('RIGHT'); time.sleep(2.5)
+    r.mark('back'); press('BACK'); time.sleep(2)
+    r.mark('zap'); press('UP'); time.sleep(5)
+    r.mark('end')
+    r.stop()
+    shot('live-after')
+    press('OK'); time.sleep(2.5); shot('live-list')
+    press('LEFT'); time.sleep(2); shot('live-groups')
+    press('RIGHT'); time.sleep(1); press('RIGHT'); time.sleep(2); shot('live-epg')
+    press('BACK'); time.sleep(1); press('BACK'); time.sleep(1); press('BACK'); time.sleep(2)
+    if not alive():
+        launch(); time.sleep(10)
+    # settings: find an entry (mine tab or long-press) and scan sections for theme rows
+    top_tab(r'^我的$'); time.sleep(4)
+    n = dump()
+    st = find(n, r'^设置$', exact=True)
+    if st:
+        tap_node(st[0]); time.sleep(4)
+    n = shot('settings-0')
+    for sec in ('来源', '首页与发现', '播放', '解码', '预载', '弹幕', '应用'):
+        n = dump()
+        hit = [x for x in find(n, f'^{sec}$', exact=True) if x['b'][0] < 330]
+        if not hit:
+            continue
+        tap_node(hit[0]); time.sleep(2.5); shot(f'set-{sec}')
+        press('RIGHT'); time.sleep(0.8)
+        for i in range(6):
+            press('DOWN'); time.sleep(0.5)
+        shot(f'set-{sec}-low')
+    for row in ('主题色彩', '外观模式'):
+        for sec in ('应用', '首页与发现'):
+            n = dump()
+            h = find(n, f'^{row}$', exact=True)
+            if h:
+                break
+            hs = [x for x in find(n, f'^{sec}$', exact=True) if x['b'][0] < 330]
+            if hs:
+                tap_node(hs[0]); time.sleep(2)
+                for i in range(8):
+                    n = dump(); h = find(n, f'^{row}$', exact=True)
+                    if h: break
+                    press('RIGHT'); press('DOWN', 3, 0.3)
+            if h:
+                break
+        log('row', row, bool(h))
+        if not h:
+            continue
+        tap_node(h[0]); time.sleep(3)
+        n = shot(f'dlg-{row}')
+        opts = [x for x in n if (x['text'] or '') in ('星际蓝', '跟随壁纸', 'B站粉', '翡翠绿', '琥珀金', '曜石紫', '赤焰红', '深色', '浅色', '跟随系统')]
+        log('opts', [(x['text'], x['b']) for x in opts])
+        if row == '主题色彩' and opts:
+            anim(S)
+            r = Rec('themes', 175)
+            for o in [x for x in opts if x['text'] in ('B站粉', '翡翠绿', '琥珀金', '曜石紫', '赤焰红', '星际蓝')]:
+                r.mark(o['text']); tap_node(o); g(2.4)
+                n2 = dump()
+                again = [x for x in n2 if x['text'] == o['text']]
+                if not again:
+                    h2 = find(n2, '^主题色彩$', exact=True)
+                    if h2:
+                        tap_node(h2[0]); g(1.2)
+            r.mark('end')
+            r.stop()
+            anim(1)
+            shot('themes-after')
+        press('BACK'); time.sleep(1.5)
+    shot('end')
+
+
 if __name__ == '__main__':
     t = time.time()
     try:
