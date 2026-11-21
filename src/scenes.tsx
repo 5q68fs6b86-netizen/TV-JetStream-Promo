@@ -410,7 +410,7 @@ const SkipBar: React.FC<{start: number}> = ({start}) => {
   const pos = f < 50 ? io(f, 0, 50, 0.02, a, (t) => t) : a + (b - a) * jump + io(f, 64, 140, 0, 0.04, (t) => t);
   const hot = io(f, 34, 42) * (1 - io(f, 60, 74));
   return (
-    <div style={{position: 'absolute', right: 120, bottom: 170, width: W, opacity: io(f, 0, 16)}}>
+    <div style={{position: 'absolute', right: 120, bottom: 330, width: W, opacity: io(f, 0, 16)}}>
       <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: 26}}>
         <div
           style={{
@@ -464,25 +464,39 @@ const Subtitle: React.FC<{start: number}> = ({start}) => {
 export const Cinema: React.FC = () => {
   const f = useCurrentFrame();
   // 0-240: film full-bleed with letterbox; 240-480: real app playback w/ danmaku; 480-960: OSD + feature callouts
-  const lb = io(f, 0, 40) * (1 - io(f, 220, 250));
+  const lb = io(f, 100, 140) * (1 - io(f, 220, 250));
   const appIn = io(f, 228, 262, 0, 1, INOUT);
   return (
     <AbsoluteFill style={{background: '#000'}}>
+      {/* A0. real detail page of the demo title, push into the play button */}
+      <Sequence from={0} durationInFrames={110} layout="none">
+        <AbsoluteFill
+          style={{
+            transformOrigin: '82% 44%',
+            transform: `scale(${1 + 1.6 * io(f, 40, 108, 0, 1, IN)})`,
+            opacity: 1 - io(f, 92, 110),
+            filter: f > 80 ? `blur(${io(f, 80, 110, 0, 10)}px)` : undefined,
+          }}
+        >
+          <Footage clip="vod-detail" from={0.3} still="vod-0" />
+        </AbsoluteFill>
+      </Sequence>
       {/* A. cinematic film footage */}
-      <Sequence from={0} durationInFrames={262} layout="none">
-        <AbsoluteFill style={{transform: `scale(${1.08 - 0.06 * io(f, 0, 260, 0, 1, (t) => t)})`, opacity: 1 - appIn}}>
-          <Film name="sintel" from={34} />
+      <Sequence from={96} durationInFrames={170} layout="none">
+        <AbsoluteFill style={{transform: `scale(${1.1 - 0.08 * io(f, 96, 262, 0, 1, (t) => t)})`, opacity: io(f, 96, 116) * (1 - appIn)}}>
+          <Film name="sintel" from={0} />
         </AbsoluteFill>
       </Sequence>
       <Letterbox p={lb} />
-      <Callout start={40} end={226} n="播放" title="影院级观感" sub="Exo / Media3 与 MPV 双内核 · 软硬解自由切换" y={700} />
+      <Callout start={8} end={84} n="演示片库 · 辛特尔" title="选好片，按下播放" sub="海报详情 · 播放来源 · 选集一目了然" x={120} y={830} />
+      <Callout start={120} end={226} n="播放" title="影院级观感" sub="Exo / Media3 与 MPV 双内核 · 软硬解自由切换" y={700} />
       {/* B. real app playback with danmaku */}
       <Sequence from={228} durationInFrames={300} layout="none">
         <AbsoluteFill style={{opacity: appIn, transform: `scale(${1.06 - 0.06 * appIn})`}}>
-          <Footage clip="player-live" from={mark('player-live', 'playing', 1) + 6} still="player-danmaku" />
+          <Footage clip="player-live" from={mark('player-live', 'playing', 1) + 2} still="player-danmaku" />
         </AbsoluteFill>
       </Sequence>
-      <Callout start={262} end={480} n="弹幕" title="弹幕，随你调" sub="来源弹幕 · 自定义 API · 字号 / 透明度 / 速度 / 密度" y={760} />
+      <Callout start={262} end={480} n="全屏播放" title="大屏，沉浸" sub="倍速 · 画面比例 · 章节 · 选集续播 · 弹幕可调" y={760} />
       {/* C. OSD and specs */}
       <Sequence from={480} durationInFrames={480} layout="none">
         <AbsoluteFill style={{opacity: io(f, 480, 506)}}>
