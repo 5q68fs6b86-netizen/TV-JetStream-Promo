@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Turn raw emulator recordings into 60 fps promo clips.
+"""Turn raw emulator recordings into 60 fps promo clips — WITHOUT motion interpolation.
 
-The capture stretched every UI animation S x (animator scale) and spaced key presses S x,
-so speeding the footage up S x restores real-time motion while multiplying the effective
-frame rate; motion-compensated interpolation then fills it to 60 fps.
+The capture stretched every UI animation S x (animator scale) and every wait S x, so
+speeding the footage up S x restores real-time motion. `fps=60` then only selects or
+repeats captured frames: every output frame is a real frame from the device.
 
     python3 process_clips.py <capture_out_dir> <public_dir>
 """
@@ -11,17 +11,8 @@ import json, os, subprocess, sys
 
 SRC, PUB = sys.argv[1], sys.argv[2]
 os.makedirs(f'{PUB}/clips', exist_ok=True)
-
-# name -> stretch factor used when it was recorded (1 = real time)
-CLIPS = {
-    'home': 4, 'detail': 4, 'tab-calendar': 4, 'tab-library': 4, 'tab-search': 4, 'tab-mine': 4,
-    'player-osd': 4, 'player-live': 1, 'live': 1, 'library': 4, 'vod-detail': 4, 'themes': 4,
-}
-
-
-def run(cmd):
-    print('+', ' '.join(cmd[:8]), '...', flush=True)
-    subprocess.run(cmd, check=True)
+STRETCH = int(open(f'{SRC}/rec/stretch.txt').read().strip()) if os.path.exists(f'{SRC}/rec/stretch.txt') else 4
+ONLY = [x for x in os.environ.get('CLIP_FILTER', '').split('+') if x]
 
 
 def frames(path):
@@ -30,33 +21,32 @@ def frames(path):
     return [float(x) for x in out if x]
 
 
-OVR = dict(x.split('=') for x in os.environ.get('STRETCH', '').split('+') if '=' in x)
-for k, v in OVR.items():
-    CLIPS[k] = int(v)
-ONLY = [x for x in os.environ.get('CLIP_FILTER', '').split('+') if x]
 meta = {}
-for name, s in CLIPS.items():
+for fn in sorted(os.listdir(f'{SRC}/rec')):
+    if not fn.endswith('.mp4'):
+        continue
+    name = fn[:-4]
     if ONLY and name not in ONLY:
         continue
-    src = f'{SRC}/rec/{name}.mp4'
-    if not os.path.exists(src):
-        print('skip', name); continue
+    src = f'{SRC}/rec/{fn}'
     t = frames(src)
-    dur = (t[-1] if t else 0) / s
-    eff = len(t) / max(0.1, t[-1] if t else 1) * s
+    if len(t) < 5:
+        print('skip (empty)', name); continue
+    s = STRETCH
+    # motion frame rate: frames per second while the screen is changing (gaps < 0.5 s)
+    gaps = [b - a for a, b in zip(t, t[1:])]
+    moving = [g for g in gaps if g < 0.5]
+    motion_fps = (len(moving) / sum(moving) * s) if moving else 0
     out = f'{PUB}/clips/{name}.mp4'
-    vf = [f'setpts=(PTS-STARTPTS)/{s}', 'fps=60' if (eff >= 40 or os.environ.get('NO_INTERP')) else
-          'minterpolate=fps=60:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1:scd=fdiff:scd_threshold=8',
-          'scale=1920:1080:flags=lanczos', 'format=yuv420p']
-    run(['ffmpeg', '-y', '-v', 'error', '-i', src, '-an', '-vf', ','.join(vf), '-c:v', 'libx264', '-preset', 'medium',
-         '-crf', '14', '-g', '30', '-movflags', '+faststart', out])
+    vf = f'setpts=(PTS-STARTPTS)/{s},fps=60:round=near,scale=1920:1080:flags=lanczos,format=yuv420p'
+    subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', src, '-an', '-vf', vf, '-c:v', 'libx264', '-preset', 'medium',
+                    '-crf', '13', '-g', '30', '-movflags', '+faststart', out], check=True)
     marks = []
     mf = f'{SRC}/rec/{name}.marks.txt'
     if os.path.exists(mf):
         for line in open(mf):
             a, b = line.rstrip('\n').split('\t')
             marks.append({'t': round(float(a) / s, 3), 'label': b})
-    meta[name] = {'stretch': s, 'duration': round(dur, 3), 'source_fps': round(eff, 1), 'marks': marks,
-                  'frames60': int(dur * 60)}
-    print(name, meta[name]['duration'], 's, effective', meta[name]['source_fps'], 'fps')
+    meta[name] = {'stretch': s, 'duration': round(t[-1] / s, 3), 'motion_fps': round(motion_fps, 1), 'marks': marks}
+    print(f'{name}: {meta[name]["duration"]} s, motion {meta[name]["motion_fps"]} fps (stretch {s}, no interpolation)')
 json.dump(meta, open(f'{PUB}/clips/clips.json', 'w'), indent=1, ensure_ascii=False)

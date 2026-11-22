@@ -1142,6 +1142,222 @@ def film5():
     shot('end')
 
 
+# ---------------------------------------------------------------------------
+# film5: no-interpolation capture. Every UI animation is stretched S5 x and every
+# wait is S5 x longer, so after the S5 x speed-up the effective rate is >= 60 fps
+# and post only selects/duplicates real frames (no motion interpolation).
+S5 = int(os.environ.get('STRETCH', '12'))
+
+
+def g5(sec):
+    time.sleep(sec * S5)
+
+
+def k5(name, n=1, gap=0.6):
+    for _ in range(n):
+        adb('shell', 'input', 'keyevent', str(K[name]))
+        g5(gap)
+
+
+class Take:
+    """one screenrecord segment (<=175 s raw); marks are written in OUTPUT seconds"""
+    def __init__(self, name):
+        anim(S5)
+        time.sleep(1.5)
+        self.r = Rec(name, 178)
+        self.name = name
+
+    def mark(self, label):
+        self.r.mark(label)
+
+    def stop(self):
+        el = time.time() - self.r.t0
+        if el > 176:
+            log('WARN take too long', self.name, el)
+        self.r.stop()
+        anim(1)
+
+
+def find_row(label, sections=('首页与发现', '应用', '播放', '来源')):
+    for sec in sections:
+        n = dump()
+        h = find(n, f'^{label}$', exact=True)
+        if h:
+            return h[0]
+        hs = [x for x in find(n, f'^{sec}$', exact=True) if x['b'][0] < 330]
+        if not hs:
+            continue
+        tap_node(hs[0]); time.sleep(2)
+        press('RIGHT'); time.sleep(0.6)
+        for i in range(14):
+            n = dump()
+            h = find(n, f'^{label}$', exact=True)
+            if h:
+                return h[0]
+            press('DOWN'); time.sleep(0.5)
+        press('LEFT'); time.sleep(0.6)
+    return None
+
+
+def open_settings():
+    home(); time.sleep(3)
+    top_tab(r'^我的$'); time.sleep(4)
+    st = find(dump(), r'^设置$', exact=True)
+    if st:
+        tap_node(st[-1]); time.sleep(4)
+        return True
+    adb('shell', 'am', 'start', '-n', act('SettingActivity')); time.sleep(4)
+    return True
+
+
+def film5():
+    open(f'{OUT}/rec/stretch.txt', 'w').write(str(S5))
+    boot_app()
+    if not alive():
+        return
+    settle(r'查看详情', 40); time.sleep(3)
+    config_via_library()
+    # hero carousel: manual only (timers are not stretched by the animator scale)
+    open_settings()
+    row = find_row('海报主视觉轮播')
+    log('hero row', bool(row))
+    if row:
+        tap_node(row); time.sleep(2.5)
+        shot('hero-rotation-dialog')
+        tap_text(r'^仅手动切换$', exact=True, wait=2)
+        shot('hero-rotation-set')
+    home(); time.sleep(10)
+    n = shot('home-ready')
+
+    # ---- hero: carousel switches by hand ----
+    t = Take('hero')
+    t.mark('start'); g5(2.2)
+    t.mark('r1'); k5('RIGHT', gap=3.0)
+    t.mark('r2'); k5('RIGHT', gap=3.0)
+    t.mark('end')
+    t.stop()
+    shot('hero-after')
+    # ---- rows ----
+    t = Take('rows')
+    t.mark('start'); g5(0.6)
+    t.mark('down-row0'); k5('DOWN', gap=1.8)
+    k5('RIGHT', 4, 0.55)
+    t.mark('down-row1'); k5('DOWN', gap=1.6)
+    k5('RIGHT', 3, 0.55)
+    t.mark('down-row2'); k5('DOWN', gap=1.6)
+    k5('RIGHT', 2, 0.55)
+    t.mark('end')
+    t.stop()
+    shot('rows-after')
+    k5('UP', 6, 0.05); time.sleep(3)
+    # ---- TMDB detail ----
+    n = dump()
+    t = Take('detail')
+    t.mark('open')
+    if not tap_text(r'查看详情', nodes=n, wait=0.1):
+        adb('shell', 'input', 'keyevent', '23')
+    g5(2.6)
+    for i in range(3):
+        t.mark(f'down-{i}'); k5('DOWN', gap=1.6)
+    t.mark('end')
+    t.stop()
+    shot('detail-after')
+    press('BACK'); time.sleep(3)
+    # ---- calendar ----
+    top_tab(r'^日历$'); time.sleep(7)
+    shot('calendar')
+    t = Take('tab-calendar')
+    t.mark('start'); g5(0.8)
+    k5('DOWN', gap=1.4); k5('RIGHT', 3, 0.6); k5('DOWN', gap=1.4); k5('RIGHT', 2, 0.6)
+    t.mark('end')
+    t.stop()
+    k5('UP', 6, 0.05); time.sleep(1)
+    # ---- library (demo source) ----
+    home(); time.sleep(3)
+    top_tab(r'^片库$'); time.sleep(9)
+    shot('library')
+    t = Take('library')
+    t.mark('start'); g5(0.6)
+    k5('DOWN', gap=1.3); k5('RIGHT', 3, 0.6); k5('LEFT', 2, 0.5)
+    t.mark('end')
+    t.stop()
+    shot('lib-focus')
+    # ---- demo title detail ----
+    press('OK'); time.sleep(10)
+    shot('vod-0')
+    t = Take('vod-detail')
+    t.mark('start'); g5(0.8)
+    k5('DOWN', gap=1.2); k5('RIGHT', gap=0.8); k5('DOWN', gap=1.2); k5('UP', 2, 0.6)
+    t.mark('end')
+    t.stop()
+    n = shot('vod-1')
+    vid = [x for x in n if x['id'].endswith(':id/video')]
+    if vid:
+        tap_node(vid[0]); time.sleep(0.4); tap_node(vid[0])
+    else:
+        press('OK')
+    time.sleep(9)
+    shot('player-full')
+    app_post({'do': 'control', 'type': 'pause'}); time.sleep(2)
+    shot('player-paused')
+    # ---- player OSD + drawers (paused) ----
+    t = Take('player-osd')
+    t.mark('osd'); k5('OK', gap=1.8)
+    t.mark('osd-down'); k5('DOWN', gap=1.4)
+    k5('RIGHT', gap=0.8); k5('RIGHT', gap=0.8)
+    t.mark('drawer'); k5('OK', gap=2.0)
+    k5('DOWN', 2, 0.7)
+    t.mark('drawer-back'); k5('BACK', gap=1.2)
+    t.mark('end')
+    t.stop()
+    shot('player-osd-after')
+    for i in range(4):
+        press('BACK'); time.sleep(1.2)
+    if not alive():
+        launch(); time.sleep(10)
+    # ---- live (paused video, stretched UI) ----
+    adb('shell', 'am', 'start', '-n', act('LiveActivity')); time.sleep(12)
+    app_post({'do': 'control', 'type': 'pause'}); time.sleep(2)
+    shot('live-0')
+    t = Take('live')
+    t.mark('live'); g5(0.6)
+    t.mark('list'); k5('OK', gap=1.8)
+    k5('DOWN', 2, 0.8)
+    t.mark('groups'); k5('LEFT', gap=1.4)
+    k5('DOWN', gap=1.0)
+    t.mark('epg'); k5('RIGHT', 3, 0.6)
+    t.mark('end')
+    t.stop()
+    shot('live-list')
+    for i in range(3):
+        press('BACK'); time.sleep(1.2)
+    if not alive():
+        launch(); time.sleep(10)
+    # ---- themes ----
+    open_settings()
+    row = find_row('主题色彩', ('应用', '首页与发现'))
+    log('theme row', bool(row))
+    if row:
+        tap_node(row); time.sleep(3)
+        n = shot('dlg-theme')
+        t = Take('themes')
+        for nm in ('B站粉', '翡翠绿', '琥珀金', '星际蓝'):
+            n2 = dump()
+            o = next((x for x in n2 if x['text'] == nm), None)
+            if o is None:
+                h2 = find(n2, '^主题色彩$', exact=True)
+                if h2:
+                    tap_node(h2[0]); g5(0.8)
+                    o = next((x for x in dump() if x['text'] == nm), None)
+            if o is None:
+                continue
+            t.mark(nm); tap_node(o); g5(1.8)
+        t.mark('end')
+        t.stop()
+        shot('themes-after')
+    shot('end')
+
+
 if __name__ == '__main__':
     t = time.time()
     try:
