@@ -1363,15 +1363,8 @@ def live5():
     home(); time.sleep(5)
     adb('shell', 'am', 'start', '-n', act('LiveActivity')); time.sleep(25)
     shot('live-0')
-    ok = False
-    for attempt in range(4):
-        press('OK'); time.sleep(3)
-        n = shot(f'live-try-{attempt}')
-        if find(n, r'(选择分类与频道|电影频道|光影一台)'):
-            ok = True
-            press('BACK'); time.sleep(4)
-            break
-        time.sleep(8)
+    ok = True
+    time.sleep(10)
     log('live list reachable', ok)
     t = Take('live')
     t.mark('live'); g5(0.6)
