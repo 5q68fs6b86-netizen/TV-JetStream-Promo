@@ -76,7 +76,9 @@ class H(SimpleHTTPRequestHandler):
             for g in CAT['live']:
                 for ch in g['channels']:
                     lines.append(f'#EXTINF:-1 tvg-name="{ch["name"]}" tvg-logo="{BASE}/img/{ch["logo"]}" group-title="{g["group"]}",{ch["name"]}')
-                    lines.append(f'{BASE}/video/{ch["file"]}')
+                    still = 'still-' + ch['file']
+                    use = still if os.environ.get('LIVE_STILL') and os.path.exists(os.path.join(ROOT, 'video', still)) else ch['file']
+                    lines.append(f'{BASE}/video/{use}')
             b = ('\n'.join(lines) + '\n').encode()
             self.send_response(200); self.send_header('Content-Type', 'audio/x-mpegurl'); self.send_header('Content-Length', str(len(b))); self.end_headers(); self.wfile.write(b)
             return

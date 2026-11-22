@@ -1298,7 +1298,7 @@ def film5():
     shot('player-paused')
     # ---- player OSD + drawers (paused) ----
     t = Take('player-osd')
-    t.mark('osd'); k5('OK', gap=1.8)
+    t.mark('osd'); g5(1.6)
     t.mark('osd-down'); k5('DOWN', gap=1.4)
     k5('RIGHT', gap=0.8); k5('RIGHT', gap=0.8)
     t.mark('drawer'); k5('OK', gap=2.0)
@@ -1311,9 +1311,8 @@ def film5():
         press('BACK'); time.sleep(1.2)
     if not alive():
         launch(); time.sleep(10)
-    # ---- live (paused video, stretched UI) ----
+    # ---- live (still-frame channels, stretched UI) ----
     adb('shell', 'am', 'start', '-n', act('LiveActivity')); time.sleep(12)
-    app_post({'do': 'control', 'type': 'pause'}); time.sleep(2)
     shot('live-0')
     t = Take('live')
     t.mark('live'); g5(0.6)
