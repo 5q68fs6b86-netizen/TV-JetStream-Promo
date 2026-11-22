@@ -167,7 +167,7 @@ export const Cinema: React.FC = () => {
       {/* the real player */}
       <Sequence from={240} durationInFrames={240} layout="none">
         <AbsoluteFill style={{opacity: io(f, 240, 262, 0, 1, EASE), transform: `scale(${1.0 + 0.04 * io(f, 240, 480, 0, 1, (t) => t)})`}}>
-          <Footage clip="player-osd" from={Math.max(0, mark('player-osd', 'osd', 0.3) - 0.1)} still="player-osd" />
+          <Footage still="player-ctrl" />
         </AbsoluteFill>
         <AbsoluteFill style={{background: 'linear-gradient(0deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,0) 46%)'}} />
         <div style={{position: 'absolute', left: 120, bottom: 110}}>
@@ -304,7 +304,7 @@ const CUTS = [
   {clip: 'rows', from: () => mark('rows', 'down-row2', 6.5) - 0.1, still: 'home-row'},
   {clip: 'detail', from: () => mark('detail', 'down-1', 5.6), still: 'detail'},
   {clip: 'tab-calendar', from: () => 4.2, still: 'calendar'},
-  {clip: 'player-osd', from: () => mark('player-osd', 'drawer', 7.3) + 0.6, still: 'player-osd'},
+  {clip: 'player-osd', from: () => mark('player-osd', 'osd', 0.1), still: 'player-osd'},
 ];
 export const Montage: React.FC = () => {
   const f = useCurrentFrame();

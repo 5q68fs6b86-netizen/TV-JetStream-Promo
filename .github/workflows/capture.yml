@@ -67,7 +67,7 @@ jobs:
         run: |
           # still-frame live channels: stretched capture plays video fast, a held frame stays natural
           for b in media/img/*-backdrop.jpg; do id=$(basename "$b" -backdrop.jpg)
-            [ -f "media/video/$id.mp4" ] && ffmpeg -v error -y -loop 1 -i "$b" -t 30 -r 30 -vf scale=1280:720,format=yuv420p -c:v libx264 -tune stillimage -crf 20 -movflags +faststart "media/video/still-$id.mp4"
+            [ -f "media/video/$id.mp4" ] && ffmpeg -v error -y -loop 1 -i "$b" -t 900 -r 25 -vf scale=1280:720,format=yuv420p -c:v libx264 -tune stillimage -crf 20 -movflags +faststart "media/video/still-$id.mp4"
           done
           ls media/video
           nohup python3 capture/demo_server.py media 8000 > demo-server.log 2>&1 &

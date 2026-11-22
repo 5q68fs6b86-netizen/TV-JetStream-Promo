@@ -47,6 +47,7 @@ WANT = {
     'osd-drawer2': ['osd-drawer2'],
     'osd-drawer3': ['osd-drawer3'],
     'vod-0': ['vod-0', 'vod-1'],
+    'player-ctrl': ['player-ctrl'],
 }
 shots = []
 for name, cands in WANT.items():
