@@ -66,33 +66,6 @@
     }
    ]
   },
-  "live": {
-   "stretch": 12,
-   "duration": 8.292,
-   "motion_fps": 43.8,
-   "marks": [
-    {
-     "t": 0.101,
-     "label": "live"
-    },
-    {
-     "t": 0.701,
-     "label": "list"
-    },
-    {
-     "t": 4.285,
-     "label": "groups"
-    },
-    {
-     "t": 6.823,
-     "label": "epg"
-    },
-    {
-     "t": 8.773,
-     "label": "end"
-    }
-   ]
-  },
   "player-osd": {
    "stretch": 12,
    "duration": 8.318,
