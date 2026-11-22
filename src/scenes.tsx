@@ -33,7 +33,7 @@ export const Intro: React.FC = () => {
             {/* power-on bloom */}
             <AbsoluteFill style={{background: '#fff', opacity: io(f, 372, 380) * (1 - io(f, 380, 420))}} />
             <Sequence from={330} layout="none">
-              <Footage clip="home" from={mark('home', 'start', 0.3)} still="home-hero" />
+              <Footage clip="hero" from={mark('hero', 'start', 0.1)} still="home-hero" />
             </Sequence>
           </TV>
         </div>
@@ -64,8 +64,8 @@ export const Wordmark: React.FC = () => {
 /* 3 · Showcase 600–1680 — one continuous device shot                  */
 /* ================================================================== */
 const BEATS = [
-  {at: 0, clip: 'home', from: () => mark('home', 'hero-right-1', 5.9) + 0.45, still: 'home-hero', eb: '全新 JetStream 界面', h: '为大屏而生。', sub: '原生 Compose 界面，遥控器的每一次按键都有回应。'},
-  {at: 360, clip: 'home', from: () => mark('home', 'down-row1', 15.2) - 0.4, still: 'home-row', eb: '首页', h: '好片，一眼就到。', sub: 'TMDB 编辑推荐 · 分类海报墙 · 继续观看'},
+  {at: 0, clip: 'hero', from: () => mark('hero', 'start', 0.1) + 0.5, still: 'home-hero', eb: '全新 JetStream 界面', h: '为大屏而生。', sub: '原生 Compose 界面，遥控器的每一次按键都有回应。'},
+  {at: 360, clip: 'rows', from: () => Math.max(0, mark('rows', 'down-row0', 0.6) - 0.3), still: 'home-row', eb: '首页', h: '好片，一眼就到。', sub: 'TMDB 编辑推荐 · 分类海报墙 · 继续观看'},
   {at: 600, clip: 'detail', from: () => mark('detail', 'open', 0.3) + 0.5, still: 'detail', eb: '详情', h: '每一部，都被认真介绍。', sub: '沉浸背景 · 演职员 · 剧照与季集'},
   {at: 840, clip: 'tab-calendar', from: () => 0.3, still: 'calendar', eb: '追更日历', h: '追剧，从不掉线。', sub: '剧集 · 动漫 · 综艺，每日排期一目了然'},
 ];
@@ -301,7 +301,7 @@ export const Features: React.FC = () => (
 const CUTS = [
   {clip: 'library', from: () => 0.6, still: 'library'},
   {clip: 'vod-detail', from: () => 0.5, still: 'vod-0'},
-  {clip: 'home', from: () => mark('home', 'down-row2', 19), still: 'home-row'},
+  {clip: 'rows', from: () => mark('rows', 'down-row2', 6.5) - 0.1, still: 'home-row'},
   {clip: 'detail', from: () => mark('detail', 'down-1', 5.6), still: 'detail'},
   {clip: 'tab-calendar', from: () => 4.2, still: 'calendar'},
   {clip: 'player-osd', from: () => mark('player-osd', 'drawer', 7.3) + 0.6, still: 'player-osd'},

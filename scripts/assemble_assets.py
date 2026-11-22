@@ -30,8 +30,8 @@ for d in PROC:
 
 # step-name suffix -> promo still name (first match across captures, later captures win)
 WANT = {
-    'home-hero': ['ready', 'home-hero', 'launch'],
-    'home-row': ['row-1', 'home-src-d1'],
+    'home-hero': ['home-ready', 'ready', 'home-hero', 'launch'],
+    'home-row': ['rows-after', 'row-1', 'home-src-d1'],
     'detail': ['detail-after', 'detail'],
     'calendar': ['tab-calendar'],
     'player-danmaku': ['player-full', 'player-danmaku'],
