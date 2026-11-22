@@ -1353,6 +1353,38 @@ def film5():
     shot('end')
 
 
+def live5():
+    open(f'{OUT}/rec/stretch.txt', 'w').write(str(S5))
+    boot_app()
+    if not alive():
+        return
+    settle(r'查看详情', 40); time.sleep(3)
+    config_via_library()
+    home(); time.sleep(5)
+    adb('shell', 'am', 'start', '-n', act('LiveActivity')); time.sleep(25)
+    shot('live-0')
+    ok = False
+    for attempt in range(4):
+        press('OK'); time.sleep(3)
+        n = shot(f'live-try-{attempt}')
+        if find(n, r'(选择分类与频道|电影频道|光影一台)'):
+            ok = True
+            press('BACK'); time.sleep(4)
+            break
+        time.sleep(8)
+    log('live list reachable', ok)
+    t = Take('live')
+    t.mark('live'); g5(0.6)
+    t.mark('list'); k5('OK', gap=1.8)
+    k5('DOWN', 2, 0.8)
+    t.mark('groups'); k5('LEFT', gap=1.4)
+    k5('DOWN', gap=1.0)
+    t.mark('epg'); k5('RIGHT', 3, 0.6)
+    t.mark('end')
+    t.stop()
+    shot('live-list')
+
+
 if __name__ == '__main__':
     t = time.time()
     try:

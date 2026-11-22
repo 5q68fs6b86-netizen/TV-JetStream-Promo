@@ -9167,7 +9167,7 @@ const mark = (clip, label, fb = 0) => {
 const Footage = ({ clip, from = 0, still, style }) => {
   const s = { width: "100%", height: "100%", objectFit: "cover", display: "block", ...style };
   if (clip && CLIPS[clip]) {
-    const st = Math.min(from, Math.max(0, CLIPS[clip].duration - 1));
+    const st = Math.max(0, Math.min(from, CLIPS[clip].duration - 1));
     return /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.OffthreadVideo, { src: (0,esm.staticFile)(`clips/${clip}.mp4`), startFrom: Math.round(st * 60), muted: true, style: s });
   }
   const n = still && SHOTS.includes(still) ? still : SHOTS[0];
