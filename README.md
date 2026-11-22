@@ -2,7 +2,7 @@
 
 [wobuhui666/TV](https://github.com/wobuhui666/TV) 的宣传片工程：**64 秒 · 3840×2160 · 60 fps**，Remotion 渲染，GitHub Actions 全流程出片。
 
-成片见 [Releases](../../releases)（最新：[v2.0-apple](../../releases/tag/v2.0-apple)，Apple 风格）（`TV-JetStream-Promo-4K60.mp4` / `TV-JetStream-Promo-1080p60.mp4` / `cover-4k.jpg`）。
+成片见 [Releases](../../releases)（最新：[v2.1-apple](../../releases/tag/v2.1-apple)，Apple 风格）（`TV-JetStream-Promo-4K60.mp4` / `TV-JetStream-Promo-1080p60.mp4` / `cover-4k.jpg`）。
 
 ## 流程
 
