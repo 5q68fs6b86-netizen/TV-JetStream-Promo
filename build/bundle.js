@@ -9117,7 +9117,7 @@ const FONTS = [
 ];
 
 ;// ./src/assets.json
-const assets_namespaceObject = /*#__PURE__*/JSON.parse('{"_r":"build-44890522965-1","Ml":{"home":{"stretch":4,"duration":30.077,"source_fps":14.7,"marks":[{"t":0.3,"label":"start"},{"t":2.8,"label":"hero-right-0"},{"t":5.9,"label":"hero-right-1"},{"t":9.002,"label":"down-row0"},{"t":15.162,"label":"down-row1"},{"t":19.023,"label":"down-row2"},{"t":22.797,"label":"down-row3"},{"t":25.817,"label":"up"},{"t":30.005,"label":"end"}],"frames60":1804},"detail":{"stretch":4,"duration":14.692,"source_fps":16.9,"marks":[{"t":0.3,"label":"open"},{"t":3.833,"label":"down-0"},{"t":5.64,"label":"down-1"},{"t":7.473,"label":"down-2"},{"t":9.277,"label":"down-3"},{"t":13.207,"label":"up"},{"t":17.335,"label":"end"}],"frames60":881},"tab-calendar":{"stretch":4,"duration":9.519,"source_fps":14.6,"marks":[{"t":0.3,"label":"start"},{"t":9.338,"label":"end"}],"frames60":571},"live":{"stretch":1,"duration":29.56,"source_fps":6.6,"marks":[{"t":1.2,"label":"live"},{"t":5.2,"label":"list"},{"t":13.16,"label":"groups"},{"t":17.43,"label":"epg"},{"t":23.86,"label":"back"},{"t":26.45,"label":"zap"},{"t":32.36,"label":"end"}],"frames60":1773},"library":{"stretch":4,"duration":11.138,"source_fps":14.3,"marks":[{"t":0.3,"label":"start"},{"t":12.152,"label":"end"}],"frames60":668},"themes":{"stretch":4,"duration":16.416,"source_fps":8.6,"marks":[{"t":0.802,"label":"B站粉"},{"t":3.902,"label":"翡翠绿"},{"t":7.008,"label":"琥珀金"},{"t":14.912,"label":"星际蓝"},{"t":17.52,"label":"end"}],"frames60":984},"player-osd":{"stretch":4,"duration":19.84,"source_fps":15.9,"marks":[{"t":0.3,"label":"osd"},{"t":2.308,"label":"osd-down"},{"t":4.008,"label":"osd-right-0"},{"t":5.12,"label":"osd-right-1"},{"t":6.128,"label":"osd-right-2"},{"t":7.258,"label":"drawer"},{"t":11.588,"label":"drawer-back"},{"t":14,"label":"drawer2"},{"t":18.352,"label":"back"},{"t":19.76,"label":"end"}],"frames60":1190},"player-live":{"stretch":1,"duration":19.655,"source_fps":5.9,"marks":[{"t":1.21,"label":"playing"},{"t":22.18,"label":"end"}],"frames60":1179},"vod-detail":{"stretch":4,"duration":8.89,"source_fps":16.5,"marks":[{"t":0.3,"label":"start"},{"t":8.93,"label":"end"}],"frames60":533}},"sE":["home-hero","home-row","detail","calendar","player-danmaku","player-osd","live-list","library","vod-detail","theme-a","light-home","light-library","mine","osd-drawer","osd-drawer2","osd-drawer3","vod-0"]}');
+const assets_namespaceObject = /*#__PURE__*/JSON.parse('{"_r":"build-44890522965-1","Ml":{"detail":{"stretch":12,"duration":6.431,"motion_fps":102.7,"marks":[{"t":0.1,"label":"open"},{"t":2.71,"label":"down-0"},{"t":4.312,"label":"down-1"},{"t":5.913,"label":"down-2"},{"t":7.517,"label":"end"}]},"hero":{"stretch":12,"duration":8.229,"motion_fps":72,"marks":[{"t":0.1,"label":"start"},{"t":2.3,"label":"r1"},{"t":5.341,"label":"r2"},{"t":8.374,"label":"end"}]},"library":{"stretch":12,"duration":4.429,"motion_fps":202.6,"marks":[{"t":0.1,"label":"start"},{"t":4.81,"label":"end"}]},"live":{"stretch":12,"duration":8.06,"motion_fps":55.4,"marks":[{"t":0.1,"label":"live"},{"t":0.7,"label":"list"},{"t":4.145,"label":"groups"},{"t":6.65,"label":"epg"},{"t":8.573,"label":"end"}]},"player-osd":{"stretch":12,"duration":8.646,"motion_fps":90.8,"marks":[{"t":0.1,"label":"osd"},{"t":1.914,"label":"osd-down"},{"t":5.032,"label":"drawer"},{"t":8.478,"label":"drawer-back"},{"t":9.679,"label":"end"}]},"rows":{"stretch":12,"duration":10.354,"motion_fps":89.9,"marks":[{"t":0.1,"label":"start"},{"t":0.7,"label":"down-row0"},{"t":4.809,"label":"down-row1"},{"t":8.084,"label":"down-row2"},{"t":10.805,"label":"end"}]},"tab-calendar":{"stretch":12,"duration":6.668,"motion_fps":94.4,"marks":[{"t":0.1,"label":"start"},{"t":6.734,"label":"end"}]},"themes":{"stretch":12,"duration":6.693,"motion_fps":122.5,"marks":[{"t":0.267,"label":"B站粉"},{"t":2.235,"label":"翡翠绿"},{"t":4.202,"label":"琥珀金"},{"t":6.169,"label":"星际蓝"},{"t":7.972,"label":"end"}]},"vod-detail":{"stretch":12,"duration":5.221,"motion_fps":91.4,"marks":[{"t":0.1,"label":"start"},{"t":5.308,"label":"end"}]}},"sE":["home-hero","home-row","detail","player-danmaku","player-osd","live-list","library","vod-detail","theme-a","vod-0"]}');
 ;// ./src/lib.tsx
 
 
@@ -9345,7 +9345,7 @@ const Intro = () => {
     ] }) }) }),
     /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.AbsoluteFill, { style: { alignItems: "center", justifyContent: "center" }, children: /* @__PURE__ */ (0,jsx_runtime.jsx)("div", { style: { opacity: show, transform: `translateY(${(1 - show) * 70}px) scale(${cam})` }, children: /* @__PURE__ */ (0,jsx_runtime.jsxs)(TV, { w: 1400, glow: glow("home-hero"), power, children: [
       /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.AbsoluteFill, { style: { background: "#fff", opacity: io(f, 372, 380) * (1 - io(f, 380, 420)) } }),
-      /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.Sequence, { from: 330, layout: "none", children: /* @__PURE__ */ (0,jsx_runtime.jsx)(Footage, { clip: "home", from: mark("home", "start", 0.3), still: "home-hero" }) })
+      /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.Sequence, { from: 330, layout: "none", children: /* @__PURE__ */ (0,jsx_runtime.jsx)(Footage, { clip: "hero", from: mark("hero", "start", 0.1), still: "home-hero" }) })
     ] }) }) })
   ] });
 };
@@ -9358,8 +9358,8 @@ const Wordmark = () => {
   ] }) });
 };
 const BEATS = [
-  { at: 0, clip: "home", from: () => mark("home", "start", 0.3) + 2.6, still: "home-hero", eb: "\u5168\u65B0 JetStream \u754C\u9762", h: "\u4E3A\u5927\u5C4F\u800C\u751F\u3002", sub: "\u539F\u751F Compose \u754C\u9762\uFF0C\u9065\u63A7\u5668\u7684\u6BCF\u4E00\u6B21\u6309\u952E\u90FD\u6709\u56DE\u5E94\u3002" },
-  { at: 360, clip: "home", from: () => mark("home", "down-row0", 9), still: "home-row", eb: "\u9996\u9875", h: "\u597D\u7247\uFF0C\u4E00\u773C\u5C31\u5230\u3002", sub: "TMDB \u7F16\u8F91\u63A8\u8350 \xB7 \u5206\u7C7B\u6D77\u62A5\u5899 \xB7 \u7EE7\u7EED\u89C2\u770B" },
+  { at: 0, clip: "hero", from: () => mark("hero", "start", 0.1) + 0.5, still: "home-hero", eb: "\u5168\u65B0 JetStream \u754C\u9762", h: "\u4E3A\u5927\u5C4F\u800C\u751F\u3002", sub: "\u539F\u751F Compose \u754C\u9762\uFF0C\u9065\u63A7\u5668\u7684\u6BCF\u4E00\u6B21\u6309\u952E\u90FD\u6709\u56DE\u5E94\u3002" },
+  { at: 360, clip: "rows", from: () => Math.max(0, mark("rows", "down-row0", 0.6) - 0.3), still: "home-row", eb: "\u9996\u9875", h: "\u597D\u7247\uFF0C\u4E00\u773C\u5C31\u5230\u3002", sub: "TMDB \u7F16\u8F91\u63A8\u8350 \xB7 \u5206\u7C7B\u6D77\u62A5\u5899 \xB7 \u7EE7\u7EED\u89C2\u770B" },
   { at: 600, clip: "detail", from: () => mark("detail", "open", 0.3) + 0.5, still: "detail", eb: "\u8BE6\u60C5", h: "\u6BCF\u4E00\u90E8\uFF0C\u90FD\u88AB\u8BA4\u771F\u4ECB\u7ECD\u3002", sub: "\u6C89\u6D78\u80CC\u666F \xB7 \u6F14\u804C\u5458 \xB7 \u5267\u7167\u4E0E\u5B63\u96C6" },
   { at: 840, clip: "tab-calendar", from: () => 0.3, still: "calendar", eb: "\u8FFD\u66F4\u65E5\u5386", h: "\u8FFD\u5267\uFF0C\u4ECE\u4E0D\u6389\u7EBF\u3002", sub: "\u5267\u96C6 \xB7 \u52A8\u6F2B \xB7 \u7EFC\u827A\uFF0C\u6BCF\u65E5\u6392\u671F\u4E00\u76EE\u4E86\u7136" }
 ];
@@ -9501,10 +9501,10 @@ const Split = ({ side, clip, from, still, eb, h, sub }) => {
         children: /* @__PURE__ */ (0,jsx_runtime.jsx)(TV, { w: 1120, children: /* @__PURE__ */ (0,jsx_runtime.jsx)(Footage, { clip, from, still }) })
       }
     ) }),
-    /* @__PURE__ */ (0,jsx_runtime.jsxs)("div", { style: { position: "absolute", left: side === "left" ? 1300 : 120, top: 360, width: 520 }, children: [
+    /* @__PURE__ */ (0,jsx_runtime.jsxs)("div", { style: { position: "absolute", left: side === "left" ? 1290 : 110, top: 370, width: 600 }, children: [
       /* @__PURE__ */ (0,jsx_runtime.jsxs)(Reveal, { at: 18, children: [
         /* @__PURE__ */ (0,jsx_runtime.jsx)(Eyebrow, { children: eb }),
-        /* @__PURE__ */ (0,jsx_runtime.jsx)(H, { size: 92, children: h })
+        /* @__PURE__ */ (0,jsx_runtime.jsx)(H, { size: 84, children: h })
       ] }),
       /* @__PURE__ */ (0,jsx_runtime.jsx)(Reveal, { at: 30, children: /* @__PURE__ */ (0,jsx_runtime.jsx)(Sub, { size: 30, style: { marginTop: 22 }, children: sub }) })
     ] })
@@ -9525,7 +9525,7 @@ const Features = () => /* @__PURE__ */ (0,jsx_runtime.jsxs)(esm.AbsoluteFill, { 
 const CUTS = [
   { clip: "library", from: () => 0.6, still: "library" },
   { clip: "vod-detail", from: () => 0.5, still: "vod-0" },
-  { clip: "home", from: () => mark("home", "down-row2", 19), still: "home-row" },
+  { clip: "rows", from: () => mark("rows", "down-row2", 6.5) - 0.1, still: "home-row" },
   { clip: "detail", from: () => mark("detail", "down-1", 5.6), still: "detail" },
   { clip: "tab-calendar", from: () => 4.2, still: "calendar" },
   { clip: "player-osd", from: () => mark("player-osd", "drawer", 7.3) + 0.6, still: "player-osd" }

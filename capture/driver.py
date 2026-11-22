@@ -1217,17 +1217,13 @@ def film5():
         return
     settle(r'查看详情', 40); time.sleep(3)
     config_via_library()
-    # hero carousel: manual only (timers are not stretched by the animator scale)
-    open_settings()
-    row = find_row('海报主视觉轮播')
-    log('hero row', bool(row))
-    if row:
-        tap_node(row); time.sleep(2.5)
-        shot('hero-rotation-dialog')
-        tap_text(r'^仅手动切换$', exact=True, wait=2)
-        shot('hero-rotation-set')
     home(); time.sleep(10)
+    # Library mode pauses the hero carousel while it has focus (its 7 s timer is not
+    # stretched by the animator scale), so put focus on the hero before recording.
+    press('UP', 4, 0.4); time.sleep(1)
+    press('DOWN'); time.sleep(2)
     n = shot('home-ready')
+    log('hero focus', [x['text'] or x['desc'] or x['id'] for x in n if x['focused']])
 
     # ---- hero: carousel switches by hand ----
     t = Take('hero')

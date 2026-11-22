@@ -1,302 +1,223 @@
 {
  "release": "build-44890522965-1",
  "clips": {
-  "home": {
-   "stretch": 4,
-   "duration": 30.077,
-   "source_fps": 14.7,
-   "marks": [
-    {
-     "t": 0.3,
-     "label": "start"
-    },
-    {
-     "t": 2.8,
-     "label": "hero-right-0"
-    },
-    {
-     "t": 5.9,
-     "label": "hero-right-1"
-    },
-    {
-     "t": 9.002,
-     "label": "down-row0"
-    },
-    {
-     "t": 15.162,
-     "label": "down-row1"
-    },
-    {
-     "t": 19.023,
-     "label": "down-row2"
-    },
-    {
-     "t": 22.797,
-     "label": "down-row3"
-    },
-    {
-     "t": 25.817,
-     "label": "up"
-    },
-    {
-     "t": 30.005,
-     "label": "end"
-    }
-   ],
-   "frames60": 1804
-  },
   "detail": {
-   "stretch": 4,
-   "duration": 14.692,
-   "source_fps": 16.9,
+   "stretch": 12,
+   "duration": 6.431,
+   "motion_fps": 102.7,
    "marks": [
     {
-     "t": 0.3,
+     "t": 0.1,
      "label": "open"
     },
     {
-     "t": 3.833,
+     "t": 2.71,
      "label": "down-0"
     },
     {
-     "t": 5.64,
+     "t": 4.312,
      "label": "down-1"
     },
     {
-     "t": 7.473,
+     "t": 5.913,
      "label": "down-2"
     },
     {
-     "t": 9.277,
-     "label": "down-3"
-    },
-    {
-     "t": 13.207,
-     "label": "up"
-    },
-    {
-     "t": 17.335,
+     "t": 7.517,
      "label": "end"
     }
-   ],
-   "frames60": 881
+   ]
   },
-  "tab-calendar": {
-   "stretch": 4,
-   "duration": 9.519,
-   "source_fps": 14.6,
+  "hero": {
+   "stretch": 12,
+   "duration": 8.229,
+   "motion_fps": 72.0,
    "marks": [
     {
-     "t": 0.3,
+     "t": 0.1,
      "label": "start"
     },
     {
-     "t": 9.338,
+     "t": 2.3,
+     "label": "r1"
+    },
+    {
+     "t": 5.341,
+     "label": "r2"
+    },
+    {
+     "t": 8.374,
      "label": "end"
     }
-   ],
-   "frames60": 571
+   ]
   },
-  "live": {
-   "stretch": 1,
-   "duration": 29.56,
-   "source_fps": 6.6,
+  "library": {
+   "stretch": 12,
+   "duration": 4.429,
+   "motion_fps": 202.6,
    "marks": [
     {
-     "t": 1.2,
+     "t": 0.1,
+     "label": "start"
+    },
+    {
+     "t": 4.81,
+     "label": "end"
+    }
+   ]
+  },
+  "live": {
+   "stretch": 12,
+   "duration": 8.06,
+   "motion_fps": 55.4,
+   "marks": [
+    {
+     "t": 0.1,
      "label": "live"
     },
     {
-     "t": 5.2,
+     "t": 0.7,
      "label": "list"
     },
     {
-     "t": 13.16,
+     "t": 4.145,
      "label": "groups"
     },
     {
-     "t": 17.43,
+     "t": 6.65,
      "label": "epg"
     },
     {
-     "t": 23.86,
-     "label": "back"
-    },
-    {
-     "t": 26.45,
-     "label": "zap"
-    },
-    {
-     "t": 32.36,
+     "t": 8.573,
      "label": "end"
     }
-   ],
-   "frames60": 1773
-  },
-  "library": {
-   "stretch": 4,
-   "duration": 11.138,
-   "source_fps": 14.3,
-   "marks": [
-    {
-     "t": 0.3,
-     "label": "start"
-    },
-    {
-     "t": 12.152,
-     "label": "end"
-    }
-   ],
-   "frames60": 668
-  },
-  "themes": {
-   "stretch": 4,
-   "duration": 16.416,
-   "source_fps": 8.6,
-   "marks": [
-    {
-     "t": 0.802,
-     "label": "B站粉"
-    },
-    {
-     "t": 3.902,
-     "label": "翡翠绿"
-    },
-    {
-     "t": 7.008,
-     "label": "琥珀金"
-    },
-    {
-     "t": 14.912,
-     "label": "星际蓝"
-    },
-    {
-     "t": 17.52,
-     "label": "end"
-    }
-   ],
-   "frames60": 984
+   ]
   },
   "player-osd": {
-   "stretch": 4,
-   "duration": 19.84,
-   "source_fps": 15.9,
+   "stretch": 12,
+   "duration": 8.646,
+   "motion_fps": 90.8,
    "marks": [
     {
-     "t": 0.3,
+     "t": 0.1,
      "label": "osd"
     },
     {
-     "t": 2.308,
+     "t": 1.914,
      "label": "osd-down"
     },
     {
-     "t": 4.008,
-     "label": "osd-right-0"
-    },
-    {
-     "t": 5.12,
-     "label": "osd-right-1"
-    },
-    {
-     "t": 6.128,
-     "label": "osd-right-2"
-    },
-    {
-     "t": 7.258,
+     "t": 5.032,
      "label": "drawer"
     },
     {
-     "t": 11.588,
+     "t": 8.478,
      "label": "drawer-back"
     },
     {
-     "t": 14.0,
-     "label": "drawer2"
-    },
-    {
-     "t": 18.352,
-     "label": "back"
-    },
-    {
-     "t": 19.76,
+     "t": 9.679,
      "label": "end"
     }
-   ],
-   "frames60": 1190
+   ]
   },
-  "player-live": {
-   "stretch": 1,
-   "duration": 19.655,
-   "source_fps": 5.9,
+  "rows": {
+   "stretch": 12,
+   "duration": 10.354,
+   "motion_fps": 89.9,
    "marks": [
     {
-     "t": 1.21,
-     "label": "playing"
-    },
-    {
-     "t": 22.18,
-     "label": "end"
-    }
-   ],
-   "frames60": 1179
-  },
-  "vod-detail": {
-   "stretch": 4,
-   "duration": 8.89,
-   "source_fps": 16.5,
-   "marks": [
-    {
-     "t": 0.3,
+     "t": 0.1,
      "label": "start"
     },
     {
-     "t": 8.93,
+     "t": 0.7,
+     "label": "down-row0"
+    },
+    {
+     "t": 4.809,
+     "label": "down-row1"
+    },
+    {
+     "t": 8.084,
+     "label": "down-row2"
+    },
+    {
+     "t": 10.805,
      "label": "end"
     }
-   ],
-   "frames60": 533
+   ]
+  },
+  "tab-calendar": {
+   "stretch": 12,
+   "duration": 6.668,
+   "motion_fps": 94.4,
+   "marks": [
+    {
+     "t": 0.1,
+     "label": "start"
+    },
+    {
+     "t": 6.734,
+     "label": "end"
+    }
+   ]
+  },
+  "themes": {
+   "stretch": 12,
+   "duration": 6.693,
+   "motion_fps": 122.5,
+   "marks": [
+    {
+     "t": 0.267,
+     "label": "B站粉"
+    },
+    {
+     "t": 2.235,
+     "label": "翡翠绿"
+    },
+    {
+     "t": 4.202,
+     "label": "琥珀金"
+    },
+    {
+     "t": 6.169,
+     "label": "星际蓝"
+    },
+    {
+     "t": 7.972,
+     "label": "end"
+    }
+   ]
+  },
+  "vod-detail": {
+   "stretch": 12,
+   "duration": 5.221,
+   "motion_fps": 91.4,
+   "marks": [
+    {
+     "t": 0.1,
+     "label": "start"
+    },
+    {
+     "t": 5.308,
+     "label": "end"
+    }
+   ]
   }
  },
  "shots": [
   "home-hero",
   "home-row",
   "detail",
-  "calendar",
   "player-danmaku",
   "player-osd",
   "live-list",
   "library",
   "vod-detail",
   "theme-a",
-  "light-home",
-  "light-library",
-  "mine",
-  "osd-drawer",
-  "osd-drawer2",
-  "osd-drawer3",
   "vod-0"
  ],
- "posters": [
-  "posters/p00.jpg",
-  "posters/p01.jpg",
-  "posters/p02.jpg",
-  "posters/p03.jpg",
-  "posters/p04.jpg",
-  "posters/p05.jpg",
-  "posters/p06.jpg",
-  "posters/p07.jpg",
-  "posters/p08.jpg",
-  "posters/p09.jpg",
-  "posters/p10.jpg",
-  "posters/p11.jpg",
-  "posters/p12.jpg",
-  "posters/p13.jpg",
-  "posters/p14.jpg",
-  "posters/p15.jpg",
-  "posters/p16.jpg",
-  "posters/p17.jpg"
- ],
+ "posters": [],
  "films": [
   "sintel",
   "spring"
