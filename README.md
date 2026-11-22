@@ -26,7 +26,7 @@ Apple 发布会式的视觉语言：纯黑舞台、Inter Display + MiSans 大字
 模拟器的 `screenrecord` 在软件渲染下只有约 5–16 fps，用插帧补到 60 fps 会在文字和海报切换处产生重影。本工程改为**从源头放慢**：
 
 1. `capture.yml` 下载 wobuhui666/TV **最新 Release APK**，在 Actions 的 Android 14 模拟器（1920×1080，zh-CN）中安装；`capture/demo_server.py` 提供演示片库（CatVod CMS 接口 + M3U 直播 + Range 视频服务）。
-2. `capture/driver.py`（`film5` 阶段）把系统动画时长放大 **12 倍**，所有按键间隔同步放大 12 倍，分段 `screenrecord`（每段 < 180 s）。首页主视觉在获得焦点时暂停轮播（其 7 s 计时器不受动画倍率影响）；直播频道用静帧视频，播放器在暂停状态下操作，避免背景视频被快进。
+2. `capture/driver.py`（`film5` 阶段）把系统动画时长放大 **12 倍**，所有按键间隔同步放大 12 倍，分段 `screenrecord`（每段 < 180 s）。首页主视觉在获得焦点时暂停轮播（其 7 s 计时器不受动画倍率影响）；播放器在暂停状态下操作，避免背景视频被快进。直播频道列表会按真实时间自动收起（不受动画倍率影响），因此直播段使用一帧真实截图做缓慢运镜，播放控制栏同理。
 3. `scripts/process_clips.py` 只做 `setpts=PTS/12` 加速和 `fps=60` 取帧/重复帧，**不做任何运动插值**——成片中每一帧都是设备真实渲染的画面。处理后运动段的有效帧率约 55–200 fps。
 4. `assets.yml` 打包素材（`assets-pack`），`render.yml` 用 Remotion `--scale=2` 分片并行渲染 4K60，再拼接混音并发布 Release。
 
