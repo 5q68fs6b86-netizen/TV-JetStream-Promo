@@ -33,7 +33,7 @@ WANT = {
     'home-hero': ['home-ready', 'ready', 'home-hero', 'launch'],
     'home-row': ['rows-after', 'row-1', 'home-src-d1'],
     'detail': ['detail-after', 'detail'],
-    'calendar': ['tab-calendar'],
+    'calendar': ['tab-calendar', 'calendar'],
     'player-danmaku': ['player-full', 'player-danmaku'],
     'player-osd': ['osd-b', 'player-osd-after', 'play-osd-d1'],
     'live-list': ['live-list', 'live-after'],

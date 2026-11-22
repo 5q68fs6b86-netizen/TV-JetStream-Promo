@@ -3,8 +3,8 @@
  "clips": {
   "detail": {
    "stretch": 12,
-   "duration": 6.431,
-   "motion_fps": 102.7,
+   "duration": 6.77,
+   "motion_fps": 111.4,
    "marks": [
     {
      "t": 0.1,
@@ -19,19 +19,19 @@
      "label": "down-1"
     },
     {
-     "t": 5.913,
+     "t": 5.914,
      "label": "down-2"
     },
     {
-     "t": 7.517,
+     "t": 7.519,
      "label": "end"
     }
    ]
   },
   "hero": {
    "stretch": 12,
-   "duration": 8.229,
-   "motion_fps": 72.0,
+   "duration": 6.178,
+   "motion_fps": 100.4,
    "marks": [
     {
      "t": 0.1,
@@ -42,88 +42,88 @@
      "label": "r1"
     },
     {
-     "t": 5.341,
+     "t": 5.303,
      "label": "r2"
     },
     {
-     "t": 8.374,
+     "t": 8.304,
      "label": "end"
     }
    ]
   },
   "library": {
    "stretch": 12,
-   "duration": 4.429,
-   "motion_fps": 202.6,
+   "duration": 4.428,
+   "motion_fps": 216.9,
    "marks": [
     {
      "t": 0.1,
      "label": "start"
     },
     {
-     "t": 4.81,
+     "t": 4.811,
      "label": "end"
     }
    ]
   },
   "live": {
    "stretch": 12,
-   "duration": 8.06,
-   "motion_fps": 55.4,
+   "duration": 8.292,
+   "motion_fps": 43.8,
    "marks": [
     {
-     "t": 0.1,
+     "t": 0.101,
      "label": "live"
     },
     {
-     "t": 0.7,
+     "t": 0.701,
      "label": "list"
     },
     {
-     "t": 4.145,
+     "t": 4.285,
      "label": "groups"
     },
     {
-     "t": 6.65,
+     "t": 6.823,
      "label": "epg"
     },
     {
-     "t": 8.573,
+     "t": 8.773,
      "label": "end"
     }
    ]
   },
   "player-osd": {
    "stretch": 12,
-   "duration": 8.646,
-   "motion_fps": 90.8,
+   "duration": 8.318,
+   "motion_fps": 114.9,
    "marks": [
     {
      "t": 0.1,
      "label": "osd"
     },
     {
-     "t": 1.914,
+     "t": 1.7,
      "label": "osd-down"
     },
     {
-     "t": 5.032,
+     "t": 4.726,
      "label": "drawer"
     },
     {
-     "t": 8.478,
+     "t": 8.148,
      "label": "drawer-back"
     },
     {
-     "t": 9.679,
+     "t": 9.349,
      "label": "end"
     }
    ]
   },
   "rows": {
    "stretch": 12,
-   "duration": 10.354,
-   "motion_fps": 89.9,
+   "duration": 8.051,
+   "motion_fps": 132.3,
    "marks": [
     {
      "t": 0.1,
@@ -134,72 +134,72 @@
      "label": "down-row0"
     },
     {
-     "t": 4.809,
+     "t": 4.709,
      "label": "down-row1"
     },
     {
-     "t": 8.084,
+     "t": 7.992,
      "label": "down-row2"
     },
     {
-     "t": 10.805,
+     "t": 10.699,
      "label": "end"
     }
    ]
   },
   "tab-calendar": {
    "stretch": 12,
-   "duration": 6.668,
-   "motion_fps": 94.4,
+   "duration": 6.603,
+   "motion_fps": 107.5,
    "marks": [
     {
      "t": 0.1,
      "label": "start"
     },
     {
-     "t": 6.734,
+     "t": 6.738,
      "label": "end"
     }
    ]
   },
   "themes": {
    "stretch": 12,
-   "duration": 6.693,
-   "motion_fps": 122.5,
+   "duration": 6.704,
+   "motion_fps": 146.4,
    "marks": [
     {
-     "t": 0.267,
+     "t": 0.268,
      "label": "B站粉"
     },
     {
-     "t": 2.235,
+     "t": 2.237,
      "label": "翡翠绿"
     },
     {
-     "t": 4.202,
+     "t": 4.208,
      "label": "琥珀金"
     },
     {
-     "t": 6.169,
+     "t": 6.182,
      "label": "星际蓝"
     },
     {
-     "t": 7.972,
+     "t": 7.983,
      "label": "end"
     }
    ]
   },
   "vod-detail": {
    "stretch": 12,
-   "duration": 5.221,
-   "motion_fps": 91.4,
+   "duration": 5.216,
+   "motion_fps": 99.1,
    "marks": [
     {
      "t": 0.1,
      "label": "start"
     },
     {
-     "t": 5.308,
+     "t": 5.309,
      "label": "end"
     }
    ]
@@ -209,13 +209,15 @@
   "home-hero",
   "home-row",
   "detail",
+  "calendar",
   "player-danmaku",
   "player-osd",
   "live-list",
   "library",
   "vod-detail",
   "theme-a",
-  "vod-0"
+  "vod-0",
+  "player-ctrl"
  ],
  "posters": [],
  "films": [
