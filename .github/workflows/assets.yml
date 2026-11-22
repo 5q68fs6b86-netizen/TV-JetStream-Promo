@@ -6,6 +6,9 @@ on:
       capture_runs:
         description: capture run ids, comma separated (later runs override earlier clips)
         required: true
+      stretch:
+        description: per-clip stretch overrides, e.g. home=10+detail=10
+        default: ''
 
 permissions:
   contents: write
@@ -36,7 +39,7 @@ jobs:
           mkdir cap && gh run download ${{ matrix.run.id }} -R "$GITHUB_REPOSITORY" -D cap
           d=$(dirname $(find cap -type d -name rec | head -1)); echo "CAP=$d" >> "$GITHUB_ENV"; ls "$d/rec"
       - name: Speed-ramp + interpolate to 60 fps
-        env: {CLIP_FILTER: '${{ matrix.run.clips }}'}
+        env: {CLIP_FILTER: '${{ matrix.run.clips }}', STRETCH: '${{ inputs.stretch }}', NO_INTERP: '1'}
         run: python3 scripts/process_clips.py "$CAP" proc
       - uses: actions/upload-artifact@v4
         with:

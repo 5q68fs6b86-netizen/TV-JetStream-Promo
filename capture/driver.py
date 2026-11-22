@@ -1091,6 +1091,57 @@ def film4():
     shot('end')
 
 
+def film5():
+    """Ghost-free re-record: 10x slower animations, real frames only (no interpolation in post)."""
+    global S
+    S = 10
+    boot_app()
+    if not alive():
+        return
+    settle(r'查看详情', 40); time.sleep(6)
+    shot('ready')
+    anim(S)
+    r = Rec('home', 180)
+    r.mark('start'); g(2.5)
+    for i in range(2):
+        r.mark(f'hero-right-{i}'); kp('RIGHT', gap=3.0)
+    r.mark('down-row0'); kp('DOWN', gap=2.0)
+    kp('RIGHT', 3, 0.7)
+    r.mark('down-row1'); kp('DOWN', gap=1.6)
+    kp('RIGHT', 2, 0.7)
+    r.mark('down-row2'); kp('DOWN', gap=1.5)
+    r.mark('end')
+    r.stop()
+    anim(1)
+    kp('UP', 8, 0.05); time.sleep(3)
+    n = dump()
+    anim(S)
+    r = Rec('detail', 180)
+    r.mark('open')
+    if not tap_text(r'查看详情', nodes=n, wait=0.1):
+        adb('shell', 'input', 'keyevent', '23')
+    g(3.5)
+    for i in range(4):
+        r.mark(f'down-{i}'); kp('DOWN', gap=1.8)
+    r.mark('up'); kp('UP', 4, 0.5)
+    r.mark('end')
+    r.stop()
+    anim(1)
+    press('BACK'); time.sleep(3)
+    n = dump()
+    hit = [x for x in find(n, r'^日历$', exact=True) if x['b'][1] < 140]
+    if hit:
+        tap_node(hit[0]); time.sleep(8)
+        anim(S)
+        r = Rec('tab-calendar', 180)
+        r.mark('start'); g(1.5)
+        kp('DOWN', gap=1.6); kp('RIGHT', 3, 0.8); kp('DOWN', gap=1.6); kp('RIGHT', 2, 0.8)
+        r.mark('end'); g(0.5)
+        r.stop()
+        anim(1)
+    shot('end')
+
+
 if __name__ == '__main__':
     t = time.time()
     try:

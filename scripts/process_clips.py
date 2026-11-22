@@ -30,6 +30,9 @@ def frames(path):
     return [float(x) for x in out if x]
 
 
+OVR = dict(x.split('=') for x in os.environ.get('STRETCH', '').split('+') if '=' in x)
+for k, v in OVR.items():
+    CLIPS[k] = int(v)
 ONLY = [x for x in os.environ.get('CLIP_FILTER', '').split('+') if x]
 meta = {}
 for name, s in CLIPS.items():
@@ -42,7 +45,7 @@ for name, s in CLIPS.items():
     dur = (t[-1] if t else 0) / s
     eff = len(t) / max(0.1, t[-1] if t else 1) * s
     out = f'{PUB}/clips/{name}.mp4'
-    vf = [f'setpts=(PTS-STARTPTS)/{s}', 'fps=60' if eff >= 40 else
+    vf = [f'setpts=(PTS-STARTPTS)/{s}', 'fps=60' if (eff >= 40 or os.environ.get('NO_INTERP')) else
           'minterpolate=fps=60:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1:scd=fdiff:scd_threshold=8',
           'scale=1920:1080:flags=lanczos', 'format=yuv420p']
     run(['ffmpeg', '-y', '-v', 'error', '-i', src, '-an', '-vf', ','.join(vf), '-c:v', 'libx264', '-preset', 'medium',
